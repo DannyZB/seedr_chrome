@@ -1,8 +1,14 @@
+var notification_ids = {
+  'not_enough_space' : -1,
+  'torrent_added': -1
+};
+
+var user_torrent_id = 0;
+
 var hasNotificationsPermissions = false;
 chrome.notifications.getPermissionLevel(function(perm){
   hasNotificationsPermissions = perm == 'granted';
 });
-
 
 function setIcon() {
   /*if (oauth.hasToken()) {
@@ -12,7 +18,10 @@ function setIcon() {
   }*/
 };
 
-function notify(title, message, hideAfter,buttons) {
+function notify(title, message, hideAfter,buttons,notification_name) {
+  if(typeof notification_name === 'undefined') {
+    notification_name='';
+  }
   if (hasNotificationsPermissions) {
     // 0 is PERMISSION_ALLOWED
     chrome.notifications.create(
@@ -25,6 +34,7 @@ function notify(title, message, hideAfter,buttons) {
         buttons: buttons
       },
       function(i){
+        notification_ids[notification_name] = i;
         setTimeout(function(){chrome.notifications.clear('seedr_notif',function(){});},hideAfter*1000);
       }
     );
@@ -48,7 +58,13 @@ function addMagnet(magnet,force,rcb) {
     function(data){
       if(data.result == true){
         console.log(data);
-        notify('Torrent addition','Action successful , torrent added to storage',5);
+        user_torrent_id = data.user_torrent_id;
+        notify('Torrent addition','Action successful , torrent added to storage',5,[
+          {
+            title:'View Torrent',
+            iconUrl: "/images/visit.png"
+          }
+        ],'torrent_added');
         rcb({result:true});
       } else if (data.result == 'out_of_bandwidth_memory') {
         notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20,[
@@ -60,7 +76,7 @@ function addMagnet(magnet,force,rcb) {
             title:'Get More Space',
             iconUrl: "/images/check.png"
           }
-        ]);
+        ],'not_enough_space');
         rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
@@ -90,8 +106,14 @@ function addTorrent(torrent,force,rcb) {
   oauth.query('add_torrent',query,
     function(data){
       if(data.result == true){
+        user_torrent_id = data.user_torrent_id;
         console.log(data);
-        notify('Torrent addition','Action successful , torrent added to storage',5);
+        notify('Torrent addition','Action successful , torrent added to storage',5,[
+          {
+            title:'View Torrent',
+            iconUrl: "/images/visit.png"
+          }
+        ],'torrent_added');
         rcb({result:true});
       } else if (data.result == 'out_of_bandwidth_memory') {
         notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20,[
@@ -101,7 +123,7 @@ function addTorrent(torrent,force,rcb) {
           {
             title:'Get More Space'
           }
-        ]);
+        ],'not_enough_space');
         rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
@@ -188,9 +210,13 @@ function(request, sender, sendResponse) {
 });
 
 chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
-  if (btnIdx === 0) {
-      window.open("https://www.seedr.co.il/files");
-  } else if (btnIdx === 1) {
-      window.open("https://www.seedr.co.il/subscription");
+  if(notifId == notification_ids['not_enough_space']){
+    if (btnIdx === 0) {
+        window.open("https://www.seedr.co.il/files");
+    } else if (btnIdx === 1) {
+        window.open("https://www.seedr.co.il/subscription");
+    }
+  } else if (notifId == notification_ids['torrent_added']) {
+    window.open("https://www.seedr.co.il/torrent/" + user_torrent_id);
   }
 });

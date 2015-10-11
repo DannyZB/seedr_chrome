@@ -166,3 +166,21 @@ table.admin td {
 	border-top: 1px #f8f8f8 solid;
 	padding-top: 8px;
 }
+
+
+#visit-seedr-link {
+	background: linear-gradient(#ffffff,#fafafa);
+	box-shadow: 0 3px 3px #f4f4f4;
+	margin-bottom: 10px; cursor:pointer
+}
+
+#visit-seedr-link:hover {
+	background:#dedede;
+}
+
+#visit-seedr-link div {
+	float: right;
+	margin-right: 20px;
+	margin-top: 12px;
+	font-size: 10pt;
+}
