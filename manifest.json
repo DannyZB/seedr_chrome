@@ -3,7 +3,7 @@
 
   "name": "SEEDR",
   "description": "Use SEEDR with the chrome extension to streamline your torrent download experience - quick and simple .",
-  "version": "0.41",
+  "version": "0.42",
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",
@@ -34,7 +34,8 @@
     {
       "js": ["assets/jquery-1.10.2.min.js","content.js"],
       "css": ["content.css"],
-      "matches" : ["http://*/*","https://*/*"]
+      "matches" : ["http://*/*","https://*/*"],
+      "run_at": "document_end"
     }
 
   ],

@@ -103,33 +103,31 @@ function addTorrent(url,is_magnet,force) {
 	});
 }
 
-$(document).ready(function(){
-	$("a").each(function(i,elem){
-		if(typeof $(elem)[0].href !== 'undefined'){
-			var magnet_start = "magnet:?xt=urn:btih:";
-			var torrent_regex = /.[^?]+\.([^?]+)(\?|$)/;
-			var href = $(elem)[0].href;
+$("a").each(function(i,elem){
+	if(typeof $(elem)[0].href !== 'undefined'){
+		var magnet_start = "magnet:?xt=urn:btih:";
+		var torrent_regex = /.[^?]+\.([^?]+)(\?|$)/;
+		var href = $(elem)[0].href;
 
-			if(href.substr(0,magnet_start.length) == magnet_start){
-				var magnet = $(elem).attr('href');
-				$(elem).click(function(e){
-					e.preventDefault();
-					addTorrent(magnet,true);
-				});
-			} else {
-				var base_link = href.split('?')[0];
-				var matches = base_link.match(torrent_regex);
-				if(matches != null) {
-					if(matches[1] == "torrent") { // Torrent url
-						$(elem).click(function(e){
-							e.preventDefault();
-							addTorrent(href,false);
-						});
-					} 
-				}
+		if(href.substr(0,magnet_start.length) == magnet_start){
+			var magnet = $(elem).attr('href');
+			$(elem).click(function(e){
+				e.preventDefault();
+				addTorrent(magnet,true);
+			});
+		} else {
+			var base_link = href.split('?')[0];
+			var matches = base_link.match(torrent_regex);
+			if(matches != null) {
+				if(matches[1] == "torrent") { // Torrent url
+					$(elem).click(function(e){
+						e.preventDefault();
+						addTorrent(href,false);
+					});
+				} 
 			}
 		}
-	});
+	}
 });
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { // Listen to content script

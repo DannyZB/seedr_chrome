@@ -49,6 +49,9 @@ function addMagnet(magnet,force,rcb) {
         console.log(data);
         notify('Torrent addition','Action successful , torrent added to storage',5);
         rcb({result:true});
+      } else if (data.result == 'out_of_bandwidth_memory') {
+        notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20);
+        rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
         rcb({result:false});
@@ -80,6 +83,9 @@ function addTorrent(torrent,force,rcb) {
         console.log(data);
         notify('Torrent addition','Action successful , torrent added to storage',5);
         rcb({result:true});
+      } else if (data.result == 'out_of_bandwidth_memory') {
+        notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20);
+        rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
         rcb({result:false});
@@ -107,7 +113,9 @@ function listenerAddTorrent (message, sender, sendResponse) {
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { // Listen to content script
   switch(message.type){
     case 'add_torrent':
-      if(oauth.access_token == '') {
+      if(s_storage.get('control_torrents') == false){
+        sendResponse({result:'use_default'});
+      } else if(oauth.access_token == '') {
         sendResponse({result:'login_required'});
       } else {
         listenerAddTorrent(message, sender, sendResponse);
