@@ -33,7 +33,7 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
         oa.refresh_token = data.refresh_token;
         oa.refresh_token_expire = 14*24*3600 + Date.now()/1000; // Default 14-day refresh token
 
-        setTimeout(function(){oa.getTokenFromRefresh();},data.expires_in*1000 - 3600*1000); // Refresh access token 1 hour before expire
+        setTimeout(function(){oa.getTokenFromRefresh();},data.expires_in*1000 - 120*1000); // Refresh access token 2 minutes before expire
         if(post_params.username!='auto_load'){
           notify("Login successful","The extension is now active",0.8);
         } else {
@@ -90,7 +90,7 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
         oa.access_token = data.access_token;
         oa.access_token_expire = data.expires_in + Date.now()/1000;
 
-        setTimeout(function(){oa.getTokenFromRefresh},data.expires_in*1000 - 3600*1000); // Refresh access token 1 hour before it expires
+        setTimeout(function(){oa.getTokenFromRefresh();},data.expires_in*1000 - 120*1000); // Refresh access token 1 hour before it expires
       },
       error:function(data){
         this.access_token = '';
