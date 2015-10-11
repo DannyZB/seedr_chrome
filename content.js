@@ -74,13 +74,17 @@ function hideLogin()
     $("#seedr-chrome-login-div").remove();
 }
 
-function addTorrent(url,is_magnet) {
+function addTorrent(url,is_magnet,force) {
+	if(typeof force === 'undefined'){
+		force = false;
+	}
+
 	showLoading();
 	var data;
 	if(is_magnet){
-		data = {type:'add_torrent',magnet:url};
+		data = {type:'add_torrent',magnet:url,force:force};
 	} else {
-		data = {type:'add_torrent',torrent_url:url}
+		data = {type:'add_torrent',torrent_url:url,force:force}
 	}
 	chrome.runtime.sendMessage(data, function(response) {
 	    if(response.result == "use_default"){
@@ -135,6 +139,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { /
     break;
     case 'hideLoading':
     	hideLoading();
+    break;
+    case 'add_torrent':
+    	addTorrent(message.url,message.is_magnet,true);
     break;
   }
 

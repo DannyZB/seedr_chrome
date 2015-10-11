@@ -100,9 +100,9 @@ function addTorrent(torrent,force,rcb) {
 
 function listenerAddTorrent (message, sender, sendResponse) {
   if(typeof message.torrent_url !== 'undefined'){
-    addTorrent(message.torrent_url,false,sendResponse);
+    addTorrent(message.torrent_url,message.force,sendResponse);
   } else if(message.magnet !== 'undefined') {
-    addMagnet(message.magnet,false,sendResponse);
+    addMagnet(message.magnet,message.force,sendResponse);
   } else {
     console.error('no data passed to torrent add !');
     sendResponse({result:false});
@@ -154,19 +154,14 @@ var contextMenuHandler = function(info,tab) {
   var torrent_regex = /.+\.([^?]+)(\?|$)/;
   var href = info.linkUrl;
 
-  chrome.tabs.sendMessage(tab.id, {type: "showLoading"}, function(response) { });
   if(href.substr(0,magnet_start.length) == magnet_start){
-    addMagnet(href,1,function(){
-      chrome.tabs.sendMessage(tab.id, {type: "hideLoading"}, function(response) { });
-    });
+      chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:href,is_magnet:true}, function(response) { });
   } else {
     var base_link = href.split('?')[0];
     var matches = base_link.match(torrent_regex);
     if(matches != null) {
       if(matches[1] == "torrent") { // Torrent url
-        addTorrent(href,1,function(){
-          chrome.tabs.sendMessage(tab.id, {type: "hideLoading"}, function(response) { });
-        });
+        chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:href,is_magnet:false}, function(response) { });
       } 
     }
   }
