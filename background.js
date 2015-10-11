@@ -83,6 +83,42 @@ function addMagnet(magnet,force,rcb) {
           }
         ],'torrent_added');
         rcb({result:true});
+      } else if (data.result == 'added_to_wishlist') {
+        notify('Torrent added to wishlist', 'You are already downloading 2 torrents, torrent added to wishlist',20,[
+          {
+            title:'Go See',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Slots',
+            iconUrl: "/images/check.png"
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      } else if (data.result == 'out_of_wishlist') {
+        notify('Torrent addition failed', 'You may have up to 2 torrents in your wishlist',20,[
+          {
+            title:'Go Clear',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Slots',
+            iconUrl: "/images/check.png"
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      } else if (data.result == 'private_not_allowed') {
+        notify('Torrent added to wishlist', 'Private torrents are not allowed on free accounts',20,[
+          {
+            title:'Go Clear',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Space',
+            iconUrl: "/images/check.png"
+          }
+        ],'not_enough_space');
+        rcb({result:false});
       } else if (data.result == 'out_of_bandwidth_memory') {
         notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20,[
           {
@@ -132,7 +168,43 @@ function addTorrent(torrent,force,rcb) {
           }
         ],'torrent_added');
         rcb({result:true});
-      } else if (data.result == 'out_of_bandwidth_memory') {
+      } else if (data.result == 'added_to_wishlist') {
+        notify('Torrent added to wishlist', 'You are already downloading 2 torrents, torrent added to wishlist',20,[
+          {
+            title:'Go See',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Slots',
+            iconUrl: "/images/check.png"
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      } else if (data.result == 'out_of_wishlist') {
+        notify('Torrent addition failed', 'You may have up to 2 torrents in your wishlist',20,[
+          {
+            title:'Go Clear',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Slots',
+            iconUrl: "/images/check.png"
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      } else if (data.result == 'private_not_allowed') {
+        notify('Torrent added to wishlist', 'Private torrents are not allowed on free accounts',20,[
+          {
+            title:'Go Clear',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Space',
+            iconUrl: "/images/check.png"
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'out_of_bandwidth_memory') {
         notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20,[
           {
             title:'Clear Some Space'
