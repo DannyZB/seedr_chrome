@@ -1,16 +1,5 @@
-#seedr-chrome-login-div small.error {
-	display: block;
-	padding: 0.375rem 0.5625rem 0.5625rem;
-	margin-top: -1px !important;
-	margin-bottom: 1rem;
-	font-size: 0.75rem !important;
-	font-weight: normal;
-	font-style: italic;
-	background: #f04124;
-	color: #fff;
-}
 
-#seedr-chrome-login-div {
+#seedr-chrome-login-frame {
 	    animation : none;
     animation-delay : 0;
     animation-direction : normal;
@@ -173,6 +162,18 @@
 	font-weight:normal !important;
 }
 
+#seedr-chrome-login-div small.error {
+    display: block;
+    padding: 0.375rem 0.5625rem 0.5625rem;
+    margin-top: -1px !important;
+    margin-bottom: 1rem;
+    font-size: 0.75rem !important;
+    font-weight: normal;
+    font-style: italic;
+    background: #f04124;
+    color: #fff;
+}
+
 #seedr-chrome-login-div div, #seedr-chrome-login-div button, #seedr-chrome-login-div input, #seedr-chrome-login-div a, #seedr-chrome-login-div label {
 	font-size:1rem !important;
 }
@@ -211,7 +212,8 @@
 #seedr-chrome-login-div input[type="week"], 
 #seedr-chrome-login-div input[type="email"], 
 #seedr-chrome-login-div input[type="number"], 
-#seedr-chrome-login-div input[type="search"]{
+#seedr-chrome-login-div input[type="search"]
+{
 	-webkit-appearance: none !important;
 	-webkit-border-radius: 0px !important;
 	background-color: #fff !important;
@@ -239,7 +241,8 @@
 	margin-bottom:1.5em !important;
 }
 
-#seedr-chrome-login-div input[type=submit] {
+#seedr-chrome-login-div input[type=submit],
+#seedr-chrome-login-div button {
 	padding-top: 0.625rem !important;  
 	padding-right: 1.25rem !important;  
 	padding-bottom: 0.6875rem !important;  

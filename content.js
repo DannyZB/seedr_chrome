@@ -25,49 +25,11 @@ function hideLoading()
 
 function showLogin()
 {
-	$("body").append($('\
-	  <div id="seedr-chrome-login-div">\
-	    <div>\
-	    	<div style="float:right; color:grey; font-size:0.7rem; padding:22px">Login to continue ...</div> \
-	    	<img src="'+chrome.extension.getURL("images/seedr.png")+'" style="padding:10px"><br />\
-    		<form name="login" method="post" id="seedr-chrome-login-form">\
-			<p>\
-			<label>Username:</label>\
-			<input type="text" name="username" />\
-			</p>\
-			<p>\
-			<label> <span>Password <a href="https://www.seedr.co.il/dynamic/forgot-password" style="float: right; font-size:0.8em; padding-top:0.1em; width:50%">Forgot your password?</a></span>\
-			<input type="password" name="password" />\
-			<small class="error" id="seedr-chrome-login-error" style="display:none">Incorrect email/password combination</small>\
-			</p>\
-			<p style="margin-top:-20px">\
-				<input type="submit" value="Login"/>\
-				<a id="seedr-chrome-login-cancel" style="float:right; padding-top:8px" href="#">Cancel</a>\
-			</p>\
-		</form>\
-	  	</div>\
-	  </div>\
-  	').delay(100).fadeIn());
-  	$('#seedr-chrome-login-cancel').click(function(){hideLogin();});
-  	$('#seedr-chrome-login-form').submit(function(e){
-  		e.preventDefault();
-  		$("#seedr-chrome-login-div").fadeOut();
-  		showLoading();
-
-		data = {type:'login',username:$('input[name=username]',this).val(),password:$('input[name=password]',this).val()};
-
-		chrome.runtime.sendMessage(data, function(response) {
-		    if(response.result == false){
-		    	hideLoading();
-		    	$("#seedr-chrome-login-div").stop().fadeIn();
-		    	$('#seedr-chrome-login-error').show();
-		    } else {
-		    	hideLogin();
-		    	hideLoading();
-		    	addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
-			}
-		});
-  	});
+	if($('#seedr-chrome-login-frame').length){
+		$('#seedr-chrome-login-frame').fadeIn();
+	} else {
+		$("body").append($('<iframe src="https://www.seedr.co.il/dev/extension_login/login_frame.html" id="seedr-chrome-login-frame"></iframe>')).delay(100).fadeIn();
+	}
 }
 
 function hideLogin()
@@ -137,6 +99,46 @@ $("a").each(function(i,elem){
 if($('#seedr-extension-element').length > 0){
 	$('#seedr-extension-element').text('loaded');
 }
+
+function receiveMessage(event)
+{
+	// Do we trust the sender of this message?  (might be
+	// different from what we originally opened, for example).
+	if (event.origin !== "https://www.seedr.co.il"){
+		return;
+	}
+
+	message = event.data;
+
+	switch(message.function) {
+	    case 'close_login':
+	    	$('#seedr-chrome-login-frame').fadeOut();
+	    break;
+	    case 'login':
+			$("#seedr-chrome-login-frame").fadeOut();
+			showLoading();
+
+			data = {type:'login',username:message.username,password:message.password};
+
+			chrome.runtime.sendMessage(data, function(response) {
+				if(response.result == false){
+					hideLoading();
+					$("#seedr-chrome-login-frame").stop().css('opacity',1);
+					$("#seedr-chrome-login-frame")[0].contentWindow.postMessage({function:'showError'},'https://www.seedr.co.il');
+				} else {
+					hideLogin();
+					hideLoading();
+					addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
+				}
+			});
+	    break;
+	    case 'login_facebook':
+			data = {type:'login_facebook',};
+	    break;
+	}
+}
+
+window.addEventListener("message", receiveMessage, false);
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { // Listen to content script
   switch(message.type){

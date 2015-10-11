@@ -189,7 +189,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { /
   return true;
 });
 
-var oauth = new SeedrOAuth("password","seedr_chrome","https://www.seedr.co.il/oauth/token.php","https://www.seedr.co.il/oauth/resource.php");
+var oauth = new SeedrOAuth("password","seedr_chrome","https://www.seedr.co.il/oauth_test/token.php","https://www.seedr.co.il/oauth_test/resource.php");
 
 setIcon();
 

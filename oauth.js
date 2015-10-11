@@ -20,8 +20,6 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
     };
     oa.callback = callback;
 
-    var username = post_params.username;
-
     $.ajax({
       url:this.access_token_url,
       type:"POST",
@@ -32,7 +30,7 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
         oa.callback(data);
         oa.access_token = data.access_token;
         oa.refresh_token = data.refresh_token;
-        oa.username = username;
+        oa.username = data.username;
 
         clearTimeout(refreshTimeout);
         refreshTimeout = setTimeout(function(){oa.getTokenFromRefresh();},data.expires_in*1000 - 120*1000); // Refresh access token 2 minutes before expire

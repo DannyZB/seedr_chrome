@@ -30,7 +30,7 @@ $(document).ready(function(){
 			if(result == true){
 				$('#seedr-status').css('color','green');
 				$('#seedr-status').text('Logged In');
-				$('#seedr-username').text(background_page.oauth.username);
+				$('#seedr-username').text('Logged In');
 				$('#logout-li').show();
 				$('#logged-out-li').hide();
 			} else {
