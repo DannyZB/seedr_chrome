@@ -130,6 +130,10 @@ $("a").each(function(i,elem){
 	}
 });
 
+if($('#seedr-extension-element').length > 0){
+	$('#seedr-extension-element').text('loaded');
+}
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { // Listen to content script
   switch(message.type){
     case 'showLoading':
