@@ -20,9 +20,11 @@ chrome.downloads.onDeterminingFilename.addListener(function(item, suggest) {
       console.log(tab);
       chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:item.url,is_magnet:false}, function(response) { });
     });
+    return true;  // handling asynchronously
+  } else {
+    return false;
   }
 
-  return true;  // handling asynchronously
 });
 
 function setIcon() {
