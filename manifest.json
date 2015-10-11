@@ -2,8 +2,8 @@
   "manifest_version": 2,
 
   "name": "Seedr",
-  "description": "Use Seedr to download & stream torrents everywhere - quick and simple .",
-  "version": "0.65",
+  "description": "Move your torrent experience to STREAMING ! download torrents to your PC no more (:",
+  "version": "0.66",
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",
@@ -13,7 +13,7 @@
     ]
   },
   "permissions": [
-    "https://www.seedr.co.il/oauth/*",
+    "https://www.seedr.cc/oauth/*",
     "https://*.google.com/",
     "tabs",
     "notifications",
@@ -29,7 +29,7 @@
     "images/seedr.png"
   ],
   "externally_connectable": {
-    "matches": ["*://*.seedr.co.il/*"]
+    "matches": ["*://*.seedr.cc/*"]
   },
   "content_scripts": [
     {
@@ -50,7 +50,7 @@
     "128":"favicon128.png"
   },
   "externally_connectable": {
-    "matches": ["https://www.seedr.co.il/*"]
+    "matches": ["https://www.seedr.cc/*"]
   },
   "web_accessible_resources": [
       "login_frame.html",

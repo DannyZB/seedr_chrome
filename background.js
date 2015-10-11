@@ -189,7 +189,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { /
   return true;
 });
 
-var oauth = new SeedrOAuth("password","seedr_chrome","https://www.seedr.co.il/oauth_test/token.php","https://www.seedr.co.il/oauth_test/resource.php");
+var oauth = new SeedrOAuth("password","seedr_chrome","https://www.seedr.cc/oauth_test/token.php","https://www.seedr.cc/oauth_test/resource.php");
 
 setIcon();
 
@@ -223,11 +223,11 @@ function(request, sender, sendResponse) {
 chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
   if(notifId == notification_ids['not_enough_space']){
     if (btnIdx === 0) {
-        window.open("https://www.seedr.co.il/files");
+        window.open("https://www.seedr.cc/files");
     } else if (btnIdx === 1) {
-        window.open("https://www.seedr.co.il/subscription");
+        window.open("https://www.seedr.cc/subscription");
     }
   } else if (notifId == notification_ids['torrent_added']) {
-    window.open("https://www.seedr.co.il/torrent/" + user_torrent_id);
+    window.open("https://www.seedr.cc/torrent/" + user_torrent_id);
   }
 });
