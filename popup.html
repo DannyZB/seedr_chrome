@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html style="height:10px">
+<head>
+	<link rel="stylesheet" type="text/css" href="default.css" />
+	<link rel="stylesheet" type="text/css" href="assets/jquery.ui.custom.min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/foundation.min.css" />
+
+	<script type="text/javascript" src="assets/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="assets/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/javascript" src="assets/foundation.min.js"></script>
+	<script type="text/javascript" src="popup.js"></script>
+
+</head>
+<body>
+	<div id="loading-div">
+		<img src="images/ajax-loader.gif" />
+	</div>
+	<div id="content-tab">
+		<form name='login' method='post' id="login-form" style="display:none">
+			<p>
+				<img src="images/seedr.png" />
+			</p>
+			<p>
+			<label>Username:</label>
+			<input type='text' name='username' />
+			</p>
+			<p>
+			<label> <span>Password <a id="forgot-account-link" style="float: right; font-size:0.8em; padding-top:0.1em; width:50%">Forgot your password?</a></span>
+			<input type='password' name='password' />
+			<small class="error" id="login-error" style="display:none">Incorrect email/password combination</small>
+			</p>
+			<p>
+				<input type='submit' value='Login' class='button tiny radius' style="float:right"/>
+				<!--<input type="checkbox" /> Remember me -->
+			</p>
+		</form>
+		<ul id="user-menu">
+			<li style="background: linear-gradient(#ffffff,#fafafa);
+box-shadow: 0 3px 3px #f4f4f4;
+margin-bottom: 10px;">
+				<img src="images/seedr.png"  />
+			</li>
+			<li>
+				<label><div id="seedr-status" style="float:right"></div>Status : </label>
+			</li>
+			<li>
+				<input id="make-default-client-checkbox" type="checkbox">
+	      		<label for="make-default-client-checkbox">Default Torrent Client</label>
+			</li>
+			<li style="display:none">
+				<input type="button" id="logout" class="button tiny radius" style="width:100%; margin:0" value="Logout Extension"></input>
+			</li>
+		</ul>
+	</div>
+</body>

@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+
+  "name": "SEEDR",
+  "description": "Use SEEDR with the chrome extension to streamline your torrent download experience - quick and simple .",
+  "version": "0.3",
+  "background": {
+   "scripts": [
+      "assets/jquery-1.10.2.min.js",
+      "storage.js",
+      "oauth.js",
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "https://www.seedr.co.il/oauth/*",
+    "https://*.google.com/",
+    "tabs",
+    "notifications",
+    "storage",
+    "contextMenus"
+  ],
+  "web_accessible_resources": [
+    "assets/jquery-1.10.2.min.js",
+    "assets/jquery-1.10.2.min.map",
+    "images/chrome-adding-torrent.gif",
+    "images/seedr.png"
+  ],
+  "externally_connectable": {
+    "matches": ["*://*.seedr.co.il/*"]
+  },
+
+  "content_scripts": [
+    {
+      "js": ["assets/jquery-1.10.2.min.js","content.js"],
+      "css": ["content.css"],
+      "matches" : ["http://*/*","https://*/*"]
+    }
+
+  ],
+  "browser_action": {
+    "default_icon": "favicon.png",
+    "default_popup": "popup.html"
+  },
+"icons": {
+    "16": "favicon16.png",
+    "32": "favicon.png",
+    "128":"favicon128.png"
+  }
+}
