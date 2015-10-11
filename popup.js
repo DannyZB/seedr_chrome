@@ -81,6 +81,19 @@ $(document).ready(function(){
 			} else {
 				$('#seedr-status').css('color','grey');
 				$('#seedr-status').text('Logged Out');
+
+				background_page.oauth.getAccessToken(
+				{
+					username:'auto_load',
+					password:'password'
+				}, function(data) {
+					if(typeof data.error === 'undefined'){
+						$('#seedr-status').css('color','green');
+						$('#seedr-status').text('Logged In');
+					} else {
+						background_page.oauth.access_token = '';
+					}
+				});
 			}
 		});
 	}

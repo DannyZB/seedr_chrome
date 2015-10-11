@@ -11,12 +11,13 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
   this.refresh_token_url = access_token_url;
   this.apiUrl = apiUrl;
 
+  var oa = this;
+
   this.getAccessToken = function(post_params,callback) {
     var base_data = {
       "grant_type": this.grant_type,
       "client_id" : this.client_id
     };
-    var oa = this;
     oa.callback = callback;
 
     $.ajax({
@@ -59,7 +60,7 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
         data:{'func':'test','access_token':oauth.access_token},
         dataType:"json",
         success:function(data){
-          if(data.result != 'login_required'){
+          if(data.result != 'login_required' && data.error != 'invalid_token'){
             callback(true);
           } else {
             callback(false);
@@ -136,6 +137,16 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
             
             if(data.result == "login_required"){ // User not logged in or session timed out
               console.log('login required');
+            } else if(data.result == "replace_token"){ 
+              oa.getAccessToken(
+                {
+                  username:'auto_load',
+                  password:'password'
+                },
+                function(data2){
+                  callback(data);
+                }
+              );
             }
             callback(data);
         },

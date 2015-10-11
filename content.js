@@ -105,10 +105,10 @@ function addTorrent(url,is_magnet,force) {
 
 $(document).ready(function(){
 	$("a").each(function(i,elem){
-		if(typeof $(elem).attr('href') !== 'undefined'){
+		if(typeof $(elem)[0].href !== 'undefined'){
 			var magnet_start = "magnet:?xt=urn:btih:";
 			var torrent_regex = /.+\.([^?]+)(\?|$)/;
-			var href = $(elem).attr('href');
+			var href = $(elem)[0].href;
 
 			if(href.substr(0,magnet_start.length) == magnet_start){
 				var magnet = $(elem).attr('href');

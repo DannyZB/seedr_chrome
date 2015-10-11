@@ -49,7 +49,16 @@
 	margin:0.5em;
 }
 
-#seedr-chrome-login-div input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], textarea {
+#seedr-chrome-login-div input[type="text"],
+#seedr-chrome-login-div input[type="password"], 
+#seedr-chrome-login-div input[type="date"], 
+#seedr-chrome-login-div input[type="datetime"], 
+#seedr-chrome-login-div input[type="datetime-local"], 
+#seedr-chrome-login-div input[type="month"], 
+#seedr-chrome-login-div input[type="week"], 
+#seedr-chrome-login-div input[type="email"], 
+#seedr-chrome-login-div input[type="number"], 
+#seedr-chrome-login-div input[type="search"]{
 	-webkit-appearance: none;
 	-webkit-border-radius: 0px;
 	background-color: #fff;
