@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "SEEDR",
-  "description": "Use SEEDR to download & stream torrents everywhere - quick and simple .",
-  "version": "0.45",
+  "name": "Seedr",
+  "description": "Use Seedr to download & stream torrents everywhere - quick and simple .",
+  "version": "0.461",
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",
