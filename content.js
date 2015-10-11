@@ -28,7 +28,7 @@ function showLogin()
 	if($('#seedr-chrome-login-frame').length){
 		$('#seedr-chrome-login-frame').fadeIn();
 	} else {
-		$("body").append($('<iframe src="https://www.seedr.co.il/dev/extension_login/login_frame.html" id="seedr-chrome-login-frame"></iframe>')).delay(100).fadeIn();
+		$("body").append($('<iframe src="https://www.seedr.cc/dev/extension_login/login_frame.html" id="seedr-chrome-login-frame"></iframe>')).delay(100).fadeIn();
 	}
 }
 
@@ -104,7 +104,7 @@ function receiveMessage(event)
 {
 	// Do we trust the sender of this message?  (might be
 	// different from what we originally opened, for example).
-	if (event.origin !== "https://www.seedr.co.il"){
+	if (event.origin !== "https://www.seedr.cc"){
 		return;
 	}
 
@@ -124,7 +124,7 @@ function receiveMessage(event)
 				if(response.result == false){
 					hideLoading();
 					$("#seedr-chrome-login-frame").stop().css('opacity',1);
-					$("#seedr-chrome-login-frame")[0].contentWindow.postMessage({function:'showError'},'https://www.seedr.co.il');
+					$("#seedr-chrome-login-frame")[0].contentWindow.postMessage({function:'showError'},'https://www.seedr.cc');
 				} else {
 					hideLogin();
 					hideLoading();

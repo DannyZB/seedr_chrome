@@ -47,7 +47,7 @@ $(document).ready(function(){
 	});
 
 	$('#visit-seedr-link').click(function(){
-		window.open('https://www.seedr.co.il/'); 
+		window.open('https://www.seedr.cc/'); 
 		window.close();
 	});
 });
