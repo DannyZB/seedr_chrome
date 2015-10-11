@@ -10,13 +10,28 @@ chrome.notifications.getPermissionLevel(function(perm){
   hasNotificationsPermissions = perm == 'granted';
 });
 
+
+chrome.downloads.onDeterminingFilename.addListener(function(item, suggest) {
+  var ext = item.filename.split('.').pop();
+  if(ext.toLowerCase() == 'torrent' && s_storage.get("control_torrents") == true) {
+    chrome.downloads.cancel(item.id,function(data){console.log(data);});
+
+    chrome.tabs.getSelected(function(tab){
+      console.log(tab);
+      chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:item.url,is_magnet:false}, function(response) { });
+    });
+  }
+
+  return true;  // handling asynchronously
+});
+
 function setIcon() {
   /*if (oauth.hasToken()) {
     chrome.browserAction.setIcon({ 'path' : 'img/icon-19-on.png'});
   } else {
     chrome.browserAction.setIcon({ 'path' : 'img/icon-19-off.png'});
   }*/
-};
+}
 
 function notify(title, message, hideAfter,buttons,notification_name) {
   if(typeof notification_name === 'undefined') {
@@ -152,7 +167,7 @@ function listenerAddTorrent (message, sender, sendResponse) {
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { // Listen to content script
   switch(message.type){
     case 'add_torrent':
-      if(s_storage.get('control_torrents') == false){
+      if(s_storage.get('control_torrents') == false && !message.force){
         sendResponse({result:'use_default'});
       } else if(oauth.access_token == '') {
         sendResponse({result:'login_required'});
@@ -184,13 +199,7 @@ var contextMenuHandler = function(info,tab) {
   if(href.substr(0,magnet_start.length) == magnet_start){
       chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:href,is_magnet:true}, function(response) { });
   } else {
-    var base_link = href.split('?')[0];
-    var matches = base_link.match(torrent_regex);
-    if(matches != null) {
-      if(matches[1] == "torrent") { // Torrent url
-        chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:href,is_magnet:false}, function(response) { });
-      } 
-    }
+      chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:href,is_magnet:false}, function(response) { });
   }
 };
 

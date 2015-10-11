@@ -1,9 +1,9 @@
 #seedr-chrome-login-div small.error {
 	display: block;
 	padding: 0.375rem 0.5625rem 0.5625rem;
-	margin-top: -1px;
+	margin-top: -1px !important;
 	margin-bottom: 1rem;
-	font-size: 0.75rem;
+	font-size: 0.75rem !important;
 	font-weight: normal;
 	font-style: italic;
 	background: #f04124;
@@ -11,6 +11,154 @@
 }
 
 #seedr-chrome-login-div {
+	    animation : none;
+    animation-delay : 0;
+    animation-direction : normal;
+    animation-duration : 0;
+    animation-fill-mode : none;
+    animation-iteration-count : 1;
+    animation-name : none;
+    animation-play-state : running;
+    animation-timing-function : ease;
+    backface-visibility : visible;
+    background : 0;
+    background-attachment : scroll;
+    background-clip : border-box;
+    background-color : transparent;
+    background-image : none;
+    background-origin : padding-box;
+    background-position : 0 0;
+    background-position-x : 0;
+    background-position-y : 0;
+    background-repeat : repeat;
+    background-size : auto auto;
+    border : 0;
+    border-style : none;
+    border-width : medium;
+    border-color : inherit;
+    border-bottom : 0;
+    border-bottom-color : inherit;
+    border-bottom-left-radius : 0;
+    border-bottom-right-radius : 0;
+    border-bottom-style : none;
+    border-bottom-width : medium;
+    border-collapse : separate;
+    border-image : none;
+    border-left : 0;
+    border-left-color : inherit;
+    border-left-style : none;
+    border-left-width : medium;
+    border-radius : 0;
+    border-right : 0;
+    border-right-color : inherit;
+    border-right-style : none;
+    border-right-width : medium;
+    border-spacing : 0;
+    border-top : 0;
+    border-top-color : inherit;
+    border-top-left-radius : 0;
+    border-top-right-radius : 0;
+    border-top-style : none;
+    border-top-width : medium;
+    bottom : auto;
+    box-shadow : none;
+    box-sizing : content-box;
+    caption-side : top;
+    clear : none;
+    clip : auto;
+    color : inherit;
+    columns : auto;
+    column-count : auto;
+    column-fill : balance;
+    column-gap : normal;
+    column-rule : medium none currentColor;
+    column-rule-color : currentColor;
+    column-rule-style : none;
+    column-rule-width : none;
+    column-span : 1;
+    column-width : auto;
+    content : normal;
+    counter-increment : none;
+    counter-reset : none;
+    cursor : auto;
+    direction : ltr;
+    display : inline;
+    empty-cells : show;
+    float : none;
+    font : normal;
+    font-family : inherit;
+    font-size : medium;
+    font-style : normal;
+    font-variant : normal;
+    font-weight : normal;
+    height : auto;
+    hyphens : none;
+    left : auto;
+    letter-spacing : normal;
+    line-height : normal;
+    list-style : none;
+    list-style-image : none;
+    list-style-position : outside;
+    list-style-type : disc;
+    margin : 0;
+    margin-bottom : 0;
+    margin-left : 0;
+    margin-right : 0;
+    margin-top : 0;
+    max-height : none;
+    max-width : none;
+    min-height : 0;
+    min-width : 0;
+    opacity : 1;
+    orphans : 0;
+    outline : 0;
+    outline-color : invert;
+    outline-style : none;
+    outline-width : medium;
+    overflow : visible;
+    overflow-x : visible;
+    overflow-y : visible;
+    padding : 0;
+    padding-bottom : 0;
+    padding-left : 0;
+    padding-right : 0;
+    padding-top : 0;
+    page-break-after : auto;
+    page-break-before : auto;
+    page-break-inside : auto;
+    perspective : none;
+    perspective-origin : 50% 50%;
+    position : static;
+    /* May need to alter quotes for different locales (e.g fr) */
+    quotes : '\201C' '\201D' '\2018' '\2019';
+    right : auto;
+    tab-size : 8;
+    table-layout : auto;
+    text-align : inherit;
+    text-align-last : auto;
+    text-decoration : none;
+    text-decoration-color : inherit;
+    text-decoration-line : none;
+    text-decoration-style : solid;
+    text-indent : 0;
+    text-shadow : none;
+    text-transform : none;
+    top : auto;
+    transform : none;
+    transform-style : flat;
+    transition : none;
+    transition-delay : 0s;
+    transition-duration : 0s;
+    transition-property : none;
+    transition-timing-function : ease;
+    unicode-bidi : normal;
+    vertical-align : baseline;
+    visibility : visible;
+    white-space : normal;
+    widows : 0;
+    width : auto;
+    word-spacing : normal;
+    z-index : auto;
 	width: 100% !important;
 	height: 100% !important;
 	position: fixed !important;
@@ -25,28 +173,33 @@
 	font-weight:normal !important;
 }
 
+#seedr-chrome-login-div div, #seedr-chrome-login-div button, #seedr-chrome-login-div input, #seedr-chrome-login-div a, #seedr-chrome-login-div label {
+	font-size:1rem !important;
+}
+
 #seedr-chrome-login-div>div {
-	width:400px; 
-	background:white; 
-	border-radius:5px; 
-	border:1px solid #aaaaaa; 
-	padding:20px; 
-	position:absolute; 
-	left:50%; 
-	margin-left:-200px;
-	text-align:left;
+	width:400px !important; 
+	background:white !important; 
+	border-radius:5px !important; 
+	border:1px solid #aaaaaa !important; 
+	padding:20px !important; 
+	position:absolute !important; 
+	left:50% !important; 
+	margin-left:-200px !important;
+	text-align:left !important;
+	font-size:1rem !important;
 }
 
 #seedr-chrome-login-div a {
 	color: #008cba !important;
 	text-decoration: none !important;
 	line-height: inherit !important;
-	font-weight: normal;
-	font-size:0.8rem;
+	font-weight: normal !important;
+	font-size:0.8rem !important;
 }
 
 #seedr-chrome-login-div p {
-	margin:0.5em;
+	margin:0.5rem !important;
 }
 
 #seedr-chrome-login-div input[type="text"],
@@ -59,21 +212,21 @@
 #seedr-chrome-login-div input[type="email"], 
 #seedr-chrome-login-div input[type="number"], 
 #seedr-chrome-login-div input[type="search"]{
-	-webkit-appearance: none;
-	-webkit-border-radius: 0px;
-	background-color: #fff;
-	font-family: inherit;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #ccc;
-	box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-	color: rgba(0,0,0,0.75);
-	display: block;
-	font-size: 0.875rem;
-	margin: 0.2rem 0 1rem 0;
-	padding: 0.5rem;
-	height: 2.3125rem;
-	width: 100%;
+	-webkit-appearance: none !important;
+	-webkit-border-radius: 0px !important;
+	background-color: #fff !important;
+	font-family: inherit !important;
+	border-style: solid !important;
+	border-width: 1px !important;
+	border-color: #ccc !important;
+	box-shadow: inset 0 1px 2px rgba(0,0,0,0.1) !important;
+	color: rgba(0,0,0,0.75) !important;
+	display: block !important;
+	font-size: 0.875rem !important;
+	margin: 0.2rem 0 1rem 0 !important;
+	padding: 0.5rem !important;
+	height: 2.3125rem !important;
+	width: 100% !important;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -82,8 +235,8 @@
 
 #seedr-chrome-login-div label {
 	color:black !important;
-	margin:0.5em;
-	margin-bottom:1.5em;
+	margin:0.5em !important;
+	margin-bottom:1.5em !important;
 }
 
 #seedr-chrome-login-div input[type=submit] {

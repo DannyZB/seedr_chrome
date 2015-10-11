@@ -1,5 +1,6 @@
 var seedr_chrome_add_after_login = '';
 var seedr_chrome_add_after_login_magnet = false;
+var seedr_chrome_add_after_login_force = false;
 
 function notify(title,text){
 	chrome.extension.getBackgroundPage().notify(title,text);
@@ -63,7 +64,7 @@ function showLogin()
 		    } else {
 		    	hideLogin();
 		    	hideLoading();
-		    	addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet);
+		    	addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
 			}
 		});
   	});
@@ -93,6 +94,7 @@ function addTorrent(url,is_magnet,force) {
 	    } else if(response.result == 'login_required'){
 	    	seedr_chrome_add_after_login = url;
 	    	seedr_chrome_add_after_login_magnet = is_magnet;
+	    	seedr_chrome_add_after_login_force = force;
 	    	hideLoading();
 	    	showLogin();
 	    } else {
@@ -120,10 +122,12 @@ $("a").each(function(i,elem){
 			var matches = base_link.match(torrent_regex);
 			if(matches != null) {
 				if(matches[1] == "torrent") { // Torrent url
-					$(elem).click(function(e){
-						e.preventDefault();
-						addTorrent(href,false);
-					});
+					// make sure doesn't open in some idiotic tab
+					$(elem).removeAttr('target');
+					// $(elem).click(function(e){
+					// 	e.preventDefault();
+					// 	addTorrent(href,false);
+					// });
 				} 
 			}
 		}
