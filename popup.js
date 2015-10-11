@@ -32,6 +32,7 @@ $(document).ready(function(){
 				$('#seedr-status').text('Logged In');
 				$('#seedr-username').text(background_page.oauth.username);
 				$('#logout-li').show();
+				$('#logged-out-li').hide();
 			} else {
 				$('#seedr-status').css('color','grey');
 				$('#seedr-status').text('Logged Out');
