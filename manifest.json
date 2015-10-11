@@ -2,8 +2,8 @@
   "manifest_version": 2,
 
   "name": "SEEDR",
-  "description": "Use SEEDR with the chrome extension to streamline your torrent download experience - quick and simple .",
-  "version": "0.43",
+  "description": "Use SEEDR to download & stream torrents everywhere - quick and simple .",
+  "version": "0.45",
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",

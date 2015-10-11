@@ -12,7 +12,7 @@ function setIcon() {
   }*/
 };
 
-function notify(title, message, hideAfter) {
+function notify(title, message, hideAfter,buttons) {
   if (hasNotificationsPermissions) {
     // 0 is PERMISSION_ALLOWED
     chrome.notifications.create(
@@ -21,7 +21,8 @@ function notify(title, message, hideAfter) {
         iconUrl:'favicon.png',
         title:title,
         message:message,
-        type:'basic'
+        type:'basic',
+        buttons: buttons
       },
       function(i){
         setTimeout(function(){chrome.notifications.clear('seedr_notif',function(){});},hideAfter*1000);
@@ -50,7 +51,16 @@ function addMagnet(magnet,force,rcb) {
         notify('Torrent addition','Action successful , torrent added to storage',5);
         rcb({result:true});
       } else if (data.result == 'out_of_bandwidth_memory') {
-        notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20);
+        notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20,[
+          {
+            title:'Go Clear',
+            iconUrl: "/images/clear.png"
+          },
+          {
+            title:'Get More Space',
+            iconUrl: "/images/check.png"
+          }
+        ]);
         rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
@@ -84,7 +94,14 @@ function addTorrent(torrent,force,rcb) {
         notify('Torrent addition','Action successful , torrent added to storage',5);
         rcb({result:true});
       } else if (data.result == 'out_of_bandwidth_memory') {
-        notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20);
+        notify('Torrent addition failed', 'Please clear space in your account to add this torrent',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get More Space'
+          }
+        ]);
         rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
@@ -167,5 +184,13 @@ function(request, sender, sendResponse) {
     oauth.login(request.username,request.access_token,request.access_token_expire,request.refresh_token);
   } else if (request.func == 'logout') {
     oauth.logout();
+  }
+});
+
+chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
+  if (btnIdx === 0) {
+      window.open("https://www.seedr.co.il/files");
+  } else if (btnIdx === 1) {
+      window.open("https://www.seedr.co.il/subscription");
   }
 });
