@@ -34,7 +34,7 @@ function addMagnet(magnet,force,rcb) {
   var query;
   if(typeof magnet !== 'undefined' && ((s_storage.get('control_magnets') == true) || force)) {
     query = {'torrent_magnet':magnet};
-  } else {
+  } else {    
     if(s_storage.get('control_magnets') == false){
       rcb({result:'use_default'});
     } else {
@@ -45,22 +45,17 @@ function addMagnet(magnet,force,rcb) {
 
   oauth.query('add_torrent',query,
     function(data){
-      if(data.result == 'login_required'){
-        rcb({result:'login_required'});
-      } else if(data.result == 'out_of_bandwidth_memory') {
-        notify("Adding torrent failed","You haven't enough storage left to add this torrent",20);
-        rcb({result:false});
-      } else if(data.result == 'parsing_error'){
-        notify("Adding torrent failed","Failed to parse torrent ! make sure you used a valid torrent link",20);
-      } else {
+      if(data.result == true){
         console.log(data);
-        notify('Torrent Addition','Torrent added to SEEDR',0.8);
+        notify('Torrent addition','Action successful , torrent added to storage',5);
         rcb({result:true});
+      } else {
+        notify('Torrent addition failed', data.error,20);
+        rcb({result:false});
       }
     },
     function(data){
-      notify('Torrent Addition','Operation Failed',10);
-      rcb({result:false});
+      rcb(data);
     }
   );
 
@@ -81,17 +76,17 @@ function addTorrent(torrent,force,rcb) {
 
   oauth.query('add_torrent',query,
     function(data){
-      if(data.result == 'login_required'){
-        rcb({result:'login_required'});
-      } else {
+      if(data.result == true){
         console.log(data);
         notify('Torrent addition','Action successful , torrent added to storage',5);
         rcb({result:true});
+      } else {
+        notify('Torrent addition failed', data.error,20);
+        rcb({result:false});
       }
     },
     function(data){
-      notify('An error has occured while adding torrent','failed',10);
-      rcb({result:false});
+      rcb(data);
     }
   );
 
@@ -113,14 +108,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { /
   switch(message.type){
     case 'add_torrent':
       if(oauth.access_token == '') {
-        oauth.getAccessToken(
-          {
-            username:'auto_load',
-            password:''
-          }, function(data) {
-            listenerAddTorrent(message, sender, sendResponse);
-          }
-        );
+        sendResponse({result:'login_required'});
       } else {
         listenerAddTorrent(message, sender, sendResponse);
       }
@@ -137,21 +125,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { /
   return true;
 });
 
-chrome.runtime.onMessageExternal.addListener( // Listen to seedr for special requests
-  function(request, sender, sendResponse) {
-    if (sender.url == blacklistedWebsite)
-      return;  // don't allow this web page access
-    if (request.openUrlInEditor)
-      openUrl(request.openUrlInEditor);
-  });
-
 var oauth = new SeedrOAuth("password","seedr_chrome","https://www.seedr.co.il/oauth/token.php","https://www.seedr.co.il/oauth/resource.php");
 
 setIcon();
 
 var contextMenuHandler = function(info,tab) {
   var magnet_start = "magnet:?xt=urn:btih:";
-  var torrent_regex = /.+\.([^?]+)(\?|$)/;
+  var torrent_regex = /.[^?]+\.([^?]+)(\?|$)/;
   var href = info.linkUrl;
 
   if(href.substr(0,magnet_start.length) == magnet_start){
@@ -173,11 +153,11 @@ chrome.contextMenus.create({
   "onclick" : contextMenuHandler
 });
 
-oauth.getAccessToken(
-  {
-    username:'auto_load',
-    password:'password'
-  },
-  function(){
+chrome.runtime.onMessageExternal.addListener(
+function(request, sender, sendResponse) {
+  if(request.func == 'login'){
+    oauth.login(request.username,request.access_token,request.access_token_expire,request.refresh_token);
+  } else if (request.func == 'logout') {
+    oauth.logout();
   }
-);
+});

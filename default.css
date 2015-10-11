@@ -160,3 +160,9 @@ table.admin td {
     border-radius:5px;
     background-color:black;
 }
+
+#logout-li {
+	margin-top: 20px;
+	border-top: 1px #f8f8f8 solid;
+	padding-top: 8px;
+}

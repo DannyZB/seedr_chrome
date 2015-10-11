@@ -4,8 +4,6 @@ var SeedrStorage = function(){
 		control_magnets  : false,
 		access_token 	 : '',
 		refresh_token	 : '',
-		access_token_expire: 0,
-		refresh_token_expire: 0,
 		username: ''
 	};
 	

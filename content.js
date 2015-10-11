@@ -107,7 +107,7 @@ $(document).ready(function(){
 	$("a").each(function(i,elem){
 		if(typeof $(elem)[0].href !== 'undefined'){
 			var magnet_start = "magnet:?xt=urn:btih:";
-			var torrent_regex = /.+\.([^?]+)(\?|$)/;
+			var torrent_regex = /.[^?]+\.([^?]+)(\?|$)/;
 			var href = $(elem)[0].href;
 
 			if(href.substr(0,magnet_start.length) == magnet_start){
