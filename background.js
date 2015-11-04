@@ -1,6 +1,7 @@
 var notification_ids = {
   'not_enough_space' : -1,
-  'torrent_added': -1
+  'torrent_added': -1,
+  'private_only': -1
 };
 
 var user_torrent_id = 0;
@@ -161,7 +162,20 @@ function addTorrent(torrent,force,rcb) {
       if(data.result == true){
         user_torrent_id = data.user_torrent_id;
         console.log(data);
-        notify('Torrent addition','Action successful , torrent added to storage',5,[
+
+        var r = [
+          'Torrent added to storage, Cheers !',
+          'Your wish is our command .. torrent added',
+          'Torrent summoning successful',
+          'The torrent elves have successfully added it to storage',
+          'Torrent addition successful',
+          'Torrenting started',
+          'Here you go , we added it for you'
+        ];
+
+        var str = r[Math.floor(Math.random() * r.length)];
+
+        notify('Success !',str,5,[
           {
             title:'View Torrent',
             iconUrl: "/images/visit.png"
@@ -213,6 +227,60 @@ function addTorrent(torrent,force,rcb) {
             title:'Get More Space'
           }
         ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'not_enough_space_added_to_wishlist') {
+        notify('There was a problem', 'You don\'t have enough space left -- Please clear some up or upgrade.\nTorrent added to wishlist.',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get bigger storage'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'not_enough_space_wishlist_full') {
+        notify('There was a problem', 'You don\'t have enough space left -- Please clear some up or upgrade.\nYour wishlist is full -- Torrent wasn\'t added.',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get More Space'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+        }  else if (data.result == 'queue_full_added_to_wishlist') {
+        notify('There was a problem', 'You are already downloading a torrent -- Please wait for it to finish or upgrade.\nTorrent added to wishlist.',20,[
+          {
+            title:'Watch torrent paint dry :)'
+          },
+          {
+            title:'Download Immediately'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'queue_full_wishlist_full') {
+        notify('There was a problem', 'You don\'t have enough space left -- Please clear some up or upgrade.\nYour wishlist is full -- Torrent wasn\'t added.',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get More Space'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'private_not_allowed_added_to_wishlist') {
+        notify('There was a problem', 'Your account does not support private torrents.\nTorrent added to wishlist. ',20,[
+          {
+            title:'Enable private torrents support'
+          }
+        ],'private_only');
+        rcb({result:false});
+      }  else if (data.result == 'private_not_allowed_wishlist_full') {
+        notify('There was a problem', 'Your account does not support private torrents.\nYour wishlist is full -- Torrent wasn\'t added. ',20,[
+          {
+            title:'Enable private torrents support'
+          }
+        ],'private_only');
         rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
@@ -297,8 +365,10 @@ chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
     if (btnIdx === 0) {
         window.open("https://www.seedr.cc/files");
     } else if (btnIdx === 1) {
-        window.open("https://www.seedr.cc/subscription");
+        window.open("https://www.seedr.cc/premium");
     }
+  } else if (notifId == notification_ids['private_only']) {
+        window.open("https://www.seedr.cc/premium");
   } else if (notifId == notification_ids['torrent_added']) {
     window.open("https://www.seedr.cc/torrent/" + user_torrent_id);
   }
