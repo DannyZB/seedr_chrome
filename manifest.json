@@ -3,7 +3,7 @@
 
   "name": "Seedr",
   "description": "Move your torrent experience to STREAMING ! download torrents to your PC no more (:",
-  "version": "0.69",
+  "version": "0.70",
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",

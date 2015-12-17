@@ -132,6 +132,68 @@ function addMagnet(magnet,force,rcb) {
           }
         ],'not_enough_space');
         rcb({result:false});
+      }   else if (data.result == 'not_enough_space_added_to_wishlist') {
+        notify('There was a problem', 'You don\'t have enough space left -- Please clear some up or upgrade.\nTorrent added to wishlist.',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get bigger storage'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'not_enough_space_wishlist_full') {
+        notify('There was a problem', 'You don\'t have enough space left -- Please clear some up or upgrade.\nYour wishlist is full -- Torrent wasn\'t added.',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get More Space'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+        }  else if (data.result == 'queue_full_added_to_wishlist') {
+        notify('There was a problem', 'You are already downloading a torrent -- Please wait for it to finish or upgrade.\nTorrent added to wishlist.',20,[
+          {
+            title:'Watch torrent paint dry :)'
+          },
+          {
+            title:'Download Immediately'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'queue_full_wishlist_full') {
+        notify('There was a problem', 'You don\'t have enough space left -- Please clear some up or upgrade.\nYour wishlist is full -- Torrent wasn\'t added.',20,[
+          {
+            title:'Clear Some Space'
+          },
+          {
+            title:'Get More Space'
+          }
+        ],'not_enough_space');
+        rcb({result:false});
+      }  else if (data.result == 'private_not_allowed_added_to_wishlist') {
+        notify('There was a problem', 'Your account does not support private torrents.\nTorrent added to wishlist. ',20,[
+          {
+            title:'Enable private torrents support'
+          }
+        ],'private_only');
+        rcb({result:false});
+      }  else if (data.result == 'private_not_allowed_wishlist_full') {
+        notify('There was a problem', 'Your account does not support private torrents.\nYour wishlist is full -- Torrent wasn\'t added. ',20,[
+          {
+            title:'Enable private torrents support'
+          }
+        ],'private_only');
+        rcb({result:false});
+      } else if (data.result == 'parsing_error') {
+        notify('Torrent file corrupt', 'There was a problem parsing the given torrent file',20,[
+        ],'not_enough_space');
+        rcb({result:false});      
+      } else if (data.result == 'fetch_error') {
+        notify('Failed to add torrent', 'Torrent file corrupt.',20,[
+        ],'not_enough_space');
+        rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
         rcb({result:false});
@@ -281,6 +343,14 @@ function addTorrent(torrent,force,rcb) {
             title:'Enable private torrents support'
           }
         ],'private_only');
+        rcb({result:false});
+      } else if (data.result == 'parsing_error') {
+        notify('Torrent file corrupt', 'There was a problem parsing the given torrent file',20,[
+        ],'not_enough_space');
+        rcb({result:false});      
+      } else if (data.result == 'fetch_error') {
+        notify('Failed to add torrent', 'Torrent file corrupt.',20,[
+        ],'not_enough_space');
         rcb({result:false});
       } else {
         notify('Torrent addition failed', data.error,20);
