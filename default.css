@@ -4,6 +4,15 @@ html, body {
 	font-family:Verdana, Arial, Helvetica, sans-serif;
 	font-size:0.95em;
 	color:#4d4948;
+	overflow:visible;
+}
+
+@-moz-document url-prefix() { 
+  body,html {
+     overflow:hidden;
+     width:403px !important;
+     height:240px !important;
+  }
 }
 
 h1 {

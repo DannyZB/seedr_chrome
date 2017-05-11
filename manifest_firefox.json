@@ -13,13 +13,17 @@
     ]
   },
   "permissions": [
-    "https://*.seedr.cc/*",
+    "https://www.seedr.cc/oauth/*",
     "https://*.google.com/",
+    "<all_urls>",
     "tabs",
+    "notifications",
     "storage",
     "contextMenus",
     "downloads",
-    "activeTab"
+    "activeTab",
+    "webRequest",
+    "webRequestBlocking"
   ],
   "web_accessible_resources": [
     "assets/jquery-1.10.2.min.js",

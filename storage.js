@@ -1,10 +1,10 @@
 var SeedrStorage = function(){
 	this.settings = {
-		control_torrents : false,
-		control_magnets  : false,
-		access_token 	 : '',
-		refresh_token	 : '',
-		username: ''
+		control_torrents	: false,
+		control_magnets 	: false,
+		access_token		: '',
+		refresh_token		: '',
+		username			: ''
 	};
 	
 	var s = this;
