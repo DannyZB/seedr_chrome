@@ -3,6 +3,7 @@
   "name": "Seedr",
   "description": "Download Torrents to the cloud -- Download and stream them anywhere without EVER being exposed",
   "version": "0.78",
+
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",

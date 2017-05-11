@@ -280,6 +280,7 @@ function addMagnet(magnet,force,rcb,tab_id) {
   oauth.query('add_torrent',query,
     function(data){
       add_re(data,rcb,tab_id);
+
     },
     function(data){
       rcb(data,tab_id);
@@ -349,7 +350,6 @@ function addTorrent(torrent,force,rcb,tab_id) {
     }
     return false;
   }
-
   return true;
 }
 
