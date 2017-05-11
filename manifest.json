@@ -1,9 +1,14 @@
 {
   "manifest_version": 2,
+  "applications": {
+    "gecko": {
+      "id": "ff@seedr.cc"
+    }
+  },
 
   "name": "Seedr",
   "description": "Move your torrent experience to STREAMING ! download torrents to your PC no more (:",
-  "version": "0.70",
+  "version": "0.71",
   "background": {
    "scripts": [
       "assets/jquery-1.10.2.min.js",

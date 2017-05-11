@@ -12,21 +12,25 @@ chrome.notifications.getPermissionLevel(function(perm){
 });
 
 
-chrome.downloads.onDeterminingFilename.addListener(function(item, suggest) {
-  var ext = item.filename.split('.').pop();
-  if(ext.toLowerCase() == 'torrent' && s_storage.get("control_torrents") == true) {
-    chrome.downloads.cancel(item.id,function(data){console.log(data);});
+var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-    chrome.tabs.getSelected(function(tab){
-      console.log(tab);
-      chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:item.url,is_magnet:false}, function(response) { });
-    });
-    return true;  // handling asynchronously
-  } else {
-    return false;
-  }
+if(!is_firefox){
+  chrome.downloads.onDeterminingFilename.addListener(function(item, suggest) {
+    var ext = item.filename.split('.').pop();
+    if(ext.toLowerCase() == 'torrent' && s_storage.get("control_torrents") === true) {
+      chrome.downloads.cancel(item.id,function(data){console.log(data);});
 
-});
+      chrome.tabs.getSelected(function(tab){
+        console.log(tab);
+        chrome.tabs.sendMessage(tab.id, {type: "add_torrent",url:item.url,is_magnet:false}, function(response) { });
+      });
+      return true;  // handling asynchronously
+    } else {
+      return false;
+    }
+
+  });
+}
 
 function setIcon() {
   /*if (oauth.hasToken()) {
@@ -57,14 +61,14 @@ function notify(title, message, hideAfter,buttons,notification_name) {
       }
     );
   }
-}  
+}
 
 function addMagnet(magnet,force,rcb) {
   var query;
-  if(typeof magnet !== 'undefined' && ((s_storage.get('control_magnets') == true) || force)) {
+  if(typeof magnet !== 'undefined' && ((s_storage.get('control_magnets') === true) || force)) {
     query = {'torrent_magnet':magnet};
-  } else {    
-    if(s_storage.get('control_magnets') == false){
+  } else {
+    if(s_storage.get('control_magnets') === false){
       rcb({result:'use_default'});
     } else {
       rcb({result:false});
@@ -74,7 +78,7 @@ function addMagnet(magnet,force,rcb) {
 
   oauth.query('add_torrent',query,
     function(data){
-      if(data.result == true){
+      if(data.result === true){
         console.log(data);
         user_torrent_id = data.user_torrent_id;
         notify('Torrent addition','Action successful , torrent added to storage',5,[
@@ -189,7 +193,7 @@ function addMagnet(magnet,force,rcb) {
       } else if (data.result == 'parsing_error') {
         notify('Torrent file corrupt', 'There was a problem parsing the given torrent file',20,[
         ],'not_enough_space');
-        rcb({result:false});      
+        rcb({result:false});
       } else if (data.result == 'fetch_error') {
         notify('Failed to add torrent', 'Torrent file corrupt.',20,[
         ],'not_enough_space');
@@ -208,10 +212,10 @@ function addMagnet(magnet,force,rcb) {
 }
 function addTorrent(torrent,force,rcb) {
   var query;
-  if(typeof torrent !== 'undefined' && ((s_storage.get('control_torrents') == true) || force)) {
+  if(typeof torrent !== 'undefined' && ((s_storage.get('control_torrents') === true) || force)) {
     query = {'torrent_url':torrent};
-  } else {    
-    if(s_storage.get('control_torrents') == false){
+  } else {
+    if(s_storage.get('control_torrents') === false){
       rcb({result:'use_default'});
     } else {
       rcb({result:false});
@@ -221,7 +225,7 @@ function addTorrent(torrent,force,rcb) {
 
   oauth.query('add_torrent',query,
     function(data){
-      if(data.result == true){
+      if(data.result === true){
         user_torrent_id = data.user_torrent_id;
         console.log(data);
 
@@ -347,7 +351,7 @@ function addTorrent(torrent,force,rcb) {
       } else if (data.result == 'parsing_error') {
         notify('Torrent file corrupt', 'There was a problem parsing the given torrent file',20,[
         ],'not_enough_space');
-        rcb({result:false});      
+        rcb({result:false});
       } else if (data.result == 'fetch_error') {
         notify('Failed to add torrent', 'Torrent file corrupt.',20,[
         ],'not_enough_space');
@@ -379,9 +383,9 @@ function listenerAddTorrent (message, sender, sendResponse) {
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { // Listen to content script
   switch(message.type){
     case 'add_torrent':
-      if(s_storage.get('control_torrents') == false && !message.force){
+      if(s_storage.get('control_torrents') === false && !message.force){
         sendResponse({result:'use_default'});
-      } else if(oauth.access_token == '') {
+      } else if(oauth.access_token === '') {
         sendResponse({result:'login_required'});
       } else {
         listenerAddTorrent(message, sender, sendResponse);
