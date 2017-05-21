@@ -333,13 +333,17 @@ function addTorrent(torrent,force,rcb,tab_id) {
 
   if(typeof torrent !== 'undefined' && ((s_storage.get('control_torrents') === true) || force)) {
     get_file_content(torrent,function(file_data,filename){
-      oauth.query('add_torrent',{torrent_file:{data:file_data,filename:filename}},
-        function(data){
-          add_re(data,rcb,tab_id);
-        },
-        function(data){
-          rcb(data);
-        }
+      if(filename == '') {
+          if (file_data.type == 'text/html') filename='filler.html';
+          else                               filename='filler.torrent';
+      }
+      oauth.query('add_torrent',{torrent_file:{data:file_data,filename:filename},torrent_url:torrent},
+          function(data){
+              add_re(data,rcb,tab_id);
+          },
+          function(data){
+              rcb(data);
+          }
       );
     });
   } else {
@@ -418,14 +422,14 @@ chrome.contextMenus.create({
 var external_listener =
 function(request, sender, sendResponse) {
   if(request.func == 'login'){
-    oauth.login(request.username,request.access_token,request.access_token_expire,request.refresh_token);
+    oauth.login(request.username,request.access_token,3600*12,request.refresh_token);
   } else if (request.func == 'logout') {
     oauth.logout();
   }
 };
 
 if(is_firefox){
-	browser.runtime.onMessage.addListener(external_listener);
+	browser.runtime.onMessageExternal.addListener(external_listener);
 } else {
-	chrome.runtime.onMessage.addListener(external_listener);
+	chrome.runtime.onMessageExternal.addListener(external_listener);
 }

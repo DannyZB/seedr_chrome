@@ -103,6 +103,7 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
       dataType:"json",
       success:function(data){
         oa.access_token = data.access_token;
+        s_storage.set('access_token',data.access_token);
 
         clearTimeout(refreshTimeout);
         refreshTimeout = setTimeout(function(){oa.getTokenFromRefresh();},data.expires_in*1000 - 120*1000); // Refresh access token 2 minutes before expire
@@ -121,6 +122,11 @@ var SeedrOAuth = function(grant_type, client_id, access_token_url, apiUrl) {
     this.username=username;
     this.access_token=access_token;
     this.refresh_token = refresh_token;
+
+    s_storage.set('access_token',access_token);
+    s_storage.set('refresh_token',refresh_token);
+    s_storage.set('username',username);
+
     clearTimeout(refreshTimeout);
     refreshTimeout = setTimeout(function(){
       oa.getTokenFromRefresh();
