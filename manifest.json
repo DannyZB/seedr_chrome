@@ -20,7 +20,8 @@
     "storage",
     "contextMenus",
     "downloads",
-    "activeTab"
+    "activeTab",
+    "webRequest"
   ],
   "web_accessible_resources": [
     "assets/jquery-1.10.2.min.js",
