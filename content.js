@@ -134,7 +134,13 @@ function notify(data) {
 			d.buttons[i] = e;
 			d.buttons[i].onClick = function($noty){
 				$noty.close();
-				window.open(e.url);
+				//window.open(e.url);
+
+                chrome.runtime.sendMessage({
+                	type:'open_window',
+					url:e.url
+				}, function(response) {
+                });
 			};
 		});
 	}
