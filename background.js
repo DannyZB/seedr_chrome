@@ -16,7 +16,7 @@ var download_listener = function (item, suggest) {
             console.log(data);
         });
 
-        chrome.tabs.query({active: true}, function (tabs) {
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             var tab = tabs[0];
             console.log(tab);
             chrome.tabs.sendMessage(tab.id, {
@@ -34,6 +34,8 @@ var download_listener = function (item, suggest) {
 };
 
 var request_listener = function (details) {
+    if(!s_storage.get("control_torrents")) return;
+
     var code = details.statusCode;
     var type = details.type;
     if (
@@ -52,7 +54,7 @@ var request_listener = function (details) {
                 }
 
             } else if (h.name.toLowerCase() == 'content-disposition') {
-                var r = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(h.value.toLowerCase());
+                var r = /filename\*?=(?:UTF-8)?'?'?\\?"?([0-9\w\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+)"?'?;?/.exec(h.value.toLowerCase());
                 if (r) {
                     if (r.length) {
                         var f = r[1];
@@ -66,7 +68,7 @@ var request_listener = function (details) {
             }
         }
 
-        if (is_torrent && s_storage.get("control_torrents")) {
+        if (is_torrent) {
             console.log(details.url);
             console.log(details);
 
@@ -161,7 +163,8 @@ function seedr_sync() {
     chrome.tabs.query({}, function (tabs) {
         var message = {type: 'seedr_sync'};
         for (var i = 0; i < tabs.length; ++i) {
-            chrome.tabs.sendMessage(tabs[i].id, message);
+            if(typeof tabs[i].url !== 'undefined' && tabs[i].url.match(/^https:\/\/www.seedr.cc/) !== null)
+                chrome.tabs.sendMessage(tabs[i].id, message);
         }
     });
 }
@@ -388,7 +391,7 @@ function get_file_content(url, callback) {
         var filename;
 
         if (header) {
-            filename = header.match(/filename='?"?(.+)"?'?/)[1]; // image.jpg
+            filename = header.match(/filename\*?=(?:UTF-8)?'?'?\\?"?([0-9\w\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+)"?'?;?/)[1]; // image.jpg
         } else {
             filename = oReq.responseURL.substring(oReq.responseURL.lastIndexOf('/') + 1);
         }

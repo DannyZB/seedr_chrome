@@ -1,12 +1,12 @@
 {
   "manifest_version": 2,
   "name": "Seedr",
-  "description": "Download Torrents to the cloud -- Download and stream them anywhere without EVER being exposed",
-  "version": "0.8",
+  "description": "Get Stuff Instantly -- Download and play it anywhere :-)",
+  "version": "0.79.2",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqgZmjeOdp8l28WluN4YxGEi2dCCb+ktKKS9fSDrUfh6lWfJsiW6OIP6YahPu1CK4ST87Hslmz2Kfhnn5/kiN1+WeEenu9gEZc6+NiU8ethOjtN+XqkiiRDji7amot1Gw0OrucSUAiLqBBWOVnS+KRChPiq3PlumdRnOX7PqL2PcoWQX6DV2n/eQy8/wN2BBGcz57qKxvfA/pbEqRNsBPQOhblGjmqd4bSE8SeIIBV48oiVCu1H3lB1PmRUNtGwGpAPcZx+d1sLEmSBaLYbaZpLsoydHb3YKFXAzH0EmWouawI9K8GerywE2BQwSFdoGV4wN/Lv4vx/OKRPB9HeoKpQIDAQAB",
   "background": {
    "scripts": [
-      "assets/jquery-1.10.2.min.js",
+      "assets/jquery-3.3.1.min.js",
       "storage.js",
       "assets/require.js",
       "oauth.js",
@@ -26,8 +26,7 @@
     "<all_urls>"
   ],
   "web_accessible_resources": [
-    "assets/jquery-1.10.2.min.js",
-    "assets/jquery-1.10.2.min.map",
+    "assets/jquery-3.3.1.min.js",
     "assets/jquery.noty.packaged.min.js",
     "images/chrome-adding-torrent.gif",
     "images/seedr.png",
@@ -39,7 +38,7 @@
   },
   "content_scripts": [
     {
-      "js": ["assets/jquery-1.10.2.min.js","assets/jquery.noty.packaged.min.js","content.js"],
+      "js": ["assets/jquery-3.3.1.min.js","assets/jquery.noty.packaged.min.js","content.js"],
       "css": ["content.css"],
       "matches" : ["http://*/*","https://*/*"],
       "run_at": "document_end",
