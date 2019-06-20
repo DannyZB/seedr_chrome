@@ -2,7 +2,7 @@
 mkdir -p release
 mkdir -p build
 
-export SEEDR_CHROME_VERSION=$(cat manifest.json | grep \"version\" | grep -o '[0-9]*\.[0-9]*\.[0-9]*')
+export SEEDR_CHROME_VERSION=$(cat manifest.json | grep \"version\" | grep -o '[0-9]*\.[0-9]*')
 export SEEDR_FIREFOX_RELEASE=release/seedr_firefox_${SEEDR_CHROME_VERSION}.zip
 export SEEDR_CHROME_RELEASE=release/seedr_chrome_${SEEDR_CHROME_VERSION}.zip
 export SEEDR_OPERA_RELEASE=release/seedr_opera_${SEEDR_CHROME_VERSION}.zip
