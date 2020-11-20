@@ -38,9 +38,15 @@ function showLogin()
 	if($('#seedr-chrome-login-frame').length){
 		$('#seedr-chrome-login-frame').show();
 	} else {
-		$('#seedr-chrome-login-frame').remove();
-		$("body").append($('<iframe src="https://www.seedr.cc/dev/extension_login/login_frame.html" id="seedr-chrome-login-frame"></iframe>').show());
+		$("body").append($('<iframe src="https://www.seedr.cc/dev/extension_login/login_frame.html" id="seedr-chrome-login-frame"></iframe>').css('display','block'));
 	}
+
+	setTimeout(function() {
+		if(!$('#seedr-chrome-login-frame').is(':visible')) {
+
+			chrome.runtime.sendMessage({'type' : 'open_window', 'url': 'https://www.seedr.cc/dev/extension_login/login_frame.html'}, function(response) {});
+		};
+	}, 50);
 }
 
 function hideLogin()
@@ -179,13 +185,18 @@ function receiveMessage(event)
 					hideLoading();
 					$("#seedr-chrome-login-frame").stop().css('opacity',1);
 					$("#seedr-chrome-login-frame")[0].contentWindow.postMessage({function:'showError'},'https://www.seedr.cc');
-				} else {
-					hideLogin();
-					addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
-					hideLoading();
 				}
 			});
-	    break;
+		break;
+		case 'login_successful':
+			hideLogin();
+			addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
+			hideLoading();
+
+			if($('#seedr-chrome-login-div').length && window.parent == window) {
+				window.close();
+			}
+		break;
 	    case 'login_facebook':
 			data = {type:'login_facebook',};
 	    break;

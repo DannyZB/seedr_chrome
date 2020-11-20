@@ -471,6 +471,14 @@ var listener_function = function (message, sender, sendResponse) { // Listen to 
             oauth.getAccessToken(message,
                 function (data) {
                     sendResponse({result: data.result});
+
+                    chrome.tabs.query({}, function (tabs) {
+                        var message = {type: 'login_successful'};
+                        for (var i = 0; i < tabs.length; ++i) {
+                            if(typeof tabs[i].url !== 'undefined')
+                                chrome.tabs.sendMessage(tabs[i].id, message);
+                        }
+                    });
                 }
             );
             break;
