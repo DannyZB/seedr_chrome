@@ -20,8 +20,8 @@ function showLoading()
 	 $("body").append($('\
 	  <div id="seedr-chrome-loading-div" class="seedr-reset" style="">\
 	    <div style="width:200px; text-align:center; background:white; border-radius:5px; border:1px solid #aaaaaa; padding:40px ; position:absolute; left:50%; margin-left:-100px;">\
-	    <img src="'+chrome.extension.getURL("images/seedr.png")+'" style="padding:10px"><br />\
-	    <img src="'+chrome.extension.getURL("images/chrome-adding-torrent.gif")+'">\
+	    <img src="'+chrome.runtime.getURL("images/seedr.png")+'" style="padding:10px"><br />\
+	    <img src="'+chrome.runtime.getURL("images/chrome-adding-torrent.gif")+'">\
 	  	</div>\
 	  </div>\
 	  ').show());
@@ -46,7 +46,7 @@ function showLogin()
 
 			chrome.runtime.sendMessage({'type' : 'open_window', 'url': 'https://www.seedr.cc/dev/extension_login/login_frame.html'}, function(response) {});
 		};
-	}, 50);
+	}, 200);
 }
 
 function hideLogin()
@@ -188,15 +188,6 @@ function receiveMessage(event)
 				}
 			});
 		break;
-		case 'login_successful':
-			hideLogin();
-			addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
-			hideLoading();
-
-			if($('#seedr-chrome-login-div').length && window.parent == window) {
-				window.close();
-			}
-		break;
 	    case 'login_facebook':
 			data = {type:'login_facebook',};
 	    break;
@@ -224,6 +215,15 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) { /
     case 'notify':
     	notify(message);
     break;
+	case 'login_successful':
+		hideLogin();
+		addTorrent(seedr_chrome_add_after_login,seedr_chrome_add_after_login_magnet,seedr_chrome_add_after_login_force);
+		hideLoading();
+
+		if($('#seedr-chrome-login-div').length && window.parent == window) {
+			window.close();
+		}
+	break;
     case 'seedr_sync':
     	if(document.location.hostname == 'www.seedr.cc'){
     		location.href="javascript:syncFolder(true); void 0";
