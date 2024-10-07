@@ -1,47 +1,48 @@
+:root {
+    --primary-color: #008cba;
+    --error-color: #f04124;
+    --success-color: #167ce8;
+    --warning-color: #ffd01c;
+    --border-color: #dedede;
+    --text-color: #000;
+    --background-color: #fff;
+}
+
+/* Noty container */
 .noty_topRight_layout_container {
     box-shadow: 1px 1px 6px #606060 !important;
 }
 
-button.seedr-button {
+/* Seedr buttons */
+.seedr-button {
     border-radius: 3px;
-    border: 1px solid #dedede;
-    padding: 5px;
-    color: black;
+    border: 1px solid var(--border-color);
+    padding: 7px;
+    color: var(--text-color);
     font-size: 10pt;
-    display: block;
     cursor: pointer;
     text-align: center;
     display: block;
-    float: none;
-    margin: 0;
-    clear: both;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box !important;
-    margin-left: 0 !important;
-    padding: 7px;
-    margin-bottom: 10px;
+    margin: 0 0 10px 0;
     width: 100%;
+    box-sizing: border-box !important;
 }
 
-button.seedr-button-success {
-    background: #167ce8;
-    color: white;
+.seedr-button-success {
+    background: var(--success-color);
+    color: var(--background-color);
 }
 
-button.seedr-button-warning {
-    color: white;
-    background: #ffd01c;
+.seedr-button-warning {
+    background: var(--warning-color);
+    color: var(--background-color);
 }
 
-.seedr-button-error {
-
-}
-
+/* Loading div */
 #seedr-chrome-loading-div {
+    position: fixed;
     top: 0;
     left: 0;
-    position: fixed;
     width: 100%;
     height: 100%;
     margin-top: 200px;
@@ -49,181 +50,44 @@ button.seedr-button-warning {
     z-index: 2000;
 }
 
+/* Reset styles */
 .seedr-reset {
-    animation: none;
-    animation-delay: 0;
-    animation-direction: normal;
-    animation-duration: 0;
-    animation-fill-mode: none;
-    animation-iteration-count: 1;
-    animation-name: none;
-    animation-play-state: running;
-    animation-timing-function: ease;
-    backface-visibility: visible;
-    background: 0;
-    background-attachment: scroll;
-    background-clip: border-box;
-    background-color: transparent;
-    background-image: none;
-    background-origin: padding-box;
-    background-position: 0 0;
-    background-position-x: 0;
-    background-position-y: 0;
-    background-repeat: repeat;
-    background-size: auto auto;
-    border: 0;
-    border-style: none;
-    border-width: medium;
-    border-color: inherit;
-    border-bottom: 0;
-    border-bottom-color: inherit;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-style: none;
-    border-bottom-width: medium;
-    border-collapse: separate;
-    border-image: none;
-    border-left: 0;
-    border-left-color: inherit;
-    border-left-style: none;
-    border-left-width: medium;
-    border-radius: 0;
-    border-right: 0;
-    border-right-color: inherit;
-    border-right-style: none;
-    border-right-width: medium;
-    border-spacing: 0;
-    border-top: 0;
-    border-top-color: inherit;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top-style: none;
-    border-top-width: medium;
-    bottom: auto;
-    box-shadow: none;
-    box-sizing: content-box;
-    caption-side: top;
-    clear: none;
-    clip: auto;
-    color: inherit;
-    columns: auto;
-    column-count: auto;
-    column-fill: balance;
-    column-gap: normal;
-    column-rule: medium none currentColor;
-    column-rule-color: currentColor;
-    column-rule-style: none;
-    column-rule-width: none;
-    column-span: 1;
-    column-width: auto;
-    content: normal;
-    counter-increment: none;
-    counter-reset: none;
-    cursor: auto;
-    direction: ltr;
-    display: inline;
-    empty-cells: show;
-    float: none;
-    font: normal;
-    font-family: inherit;
-    font-size: medium;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
-    height: auto;
-    hyphens: none;
-    left: auto;
-    letter-spacing: normal;
-    line-height: normal;
-    list-style: none;
-    list-style-image: none;
-    list-style-position: outside;
-    list-style-type: disc;
-    margin: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    max-height: none;
-    max-width: none;
-    min-height: 0;
-    min-width: 0;
-    opacity: 1;
-    orphans: 0;
-    outline: 0;
-    outline-color: invert;
-    outline-style: none;
-    outline-width: medium;
-    overflow: visible;
-    overflow-x: visible;
-    overflow-y: visible;
-    padding: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0;
-    page-break-after: auto;
-    page-break-before: auto;
-    page-break-inside: auto;
-    perspective: none;
-    perspective-origin: 50% 50%;
-    position: static;
-    /* May need to alter quotes for different locales (e.g fr) */
-    quotes: '\201C' '\201D' '\2018' '\2019';
-    right: auto;
-    tab-size: 8;
-    table-layout: auto;
-    text-align: inherit;
-    text-align-last: auto;
-    text-decoration: none;
-    text-decoration-color: inherit;
-    text-decoration-line: none;
-    text-decoration-style: solid;
-    text-indent: 0;
-    text-shadow: none;
-    text-transform: none;
-    top: auto;
-    transform: none;
-    transform-style: flat;
-    transition: none;
-    transition-delay: 0s;
-    transition-duration: 0s;
-    transition-property: none;
-    transition-timing-function: ease;
-    unicode-bidi: normal;
-    vertical-align: baseline;
-    visibility: visible;
-    white-space: normal;
-    widows: 0;
-    width: auto;
-    word-spacing: normal;
+    all: initial;
+    box-sizing: border-box;
 }
 
+/* Login frame */
 #seedr-chrome-login-frame {
-    z-index: auto;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    position: fixed !important;
-    z-index: 1000000 !important;
-    text-align: center !important;
     padding-top: 10% !important;
-    top: 0px !important;
-    left: 0px !important;
     background: rgba(255, 255, 255, 0.6) !important;
-    font-family: 'Open Sans', Arial, 'Lucida Grande', sans-serif !important;
+    font-family: 'Open Sans', Arial, sans-serif !important;
     font-size: 1rem !important;
-    font-weight: normal !important;
+    text-align: center !important;
+    z-index: 1000000 !important;
     display: none;
-    width: 100%;
-    height: 90%;
-    background: rgba(255, 255, 255, 0.6);
-    position: fixed;
-    z-index: 1000000;
-    text-align: center;
-    padding-top: 10%;
-    top: 0;
-    left: 0;
     transition: 1s;
+}
+
+/* Login div */
+#seedr-chrome-login-div {
+    font-size: 1rem !important;
+}
+
+#seedr-chrome-login-div > div {
+    width: 400px !important;
+    background: var(--background-color) !important;
+    border-radius: 5px !important;
+    border: 1px solid #aaa !important;
+    padding: 20px !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    text-align: left !important;
 }
 
 #seedr-chrome-login-div small.error {
@@ -232,34 +96,14 @@ button.seedr-button-warning {
     margin-top: -1px !important;
     margin-bottom: 1rem;
     font-size: 0.75rem !important;
-    font-weight: normal;
     font-style: italic;
-    background: #f04124;
-    color: #fff;
-}
-
-#seedr-chrome-login-div div, #seedr-chrome-login-div button, #seedr-chrome-login-div input, #seedr-chrome-login-div a, #seedr-chrome-login-div label {
-    font-size: 1rem !important;
-}
-
-#seedr-chrome-login-div > div {
-    width: 400px !important;
-    background: white !important;
-    border-radius: 5px !important;
-    border: 1px solid #aaaaaa !important;
-    padding: 20px !important;
-    position: absolute !important;
-    left: 50% !important;
-    margin-left: -200px !important;
-    text-align: left !important;
-    font-size: 1rem !important;
+    background: var(--error-color);
+    color: var(--background-color);
 }
 
 #seedr-chrome-login-div a {
-    color: #008cba !important;
+    color: var(--primary-color) !important;
     text-decoration: none !important;
-    line-height: inherit !important;
-    font-weight: normal !important;
     font-size: 0.8rem !important;
 }
 
@@ -269,21 +113,11 @@ button.seedr-button-warning {
 
 #seedr-chrome-login-div input[type="text"],
 #seedr-chrome-login-div input[type="password"],
-#seedr-chrome-login-div input[type="date"],
-#seedr-chrome-login-div input[type="datetime"],
-#seedr-chrome-login-div input[type="datetime-local"],
-#seedr-chrome-login-div input[type="month"],
-#seedr-chrome-login-div input[type="week"],
-#seedr-chrome-login-div input[type="email"],
-#seedr-chrome-login-div input[type="number"],
-#seedr-chrome-login-div input[type="search"] {
+#seedr-chrome-login-div input[type="email"] {
     -webkit-appearance: none !important;
-    -webkit-border-radius: 0px !important;
-    background-color: #fff !important;
-    font-family: inherit !important;
-    border-style: solid !important;
-    border-width: 1px !important;
-    border-color: #ccc !important;
+    background-color: var(--background-color) !important;
+    border: 1px solid #ccc !important;
+    border-radius: 0 !important;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
     color: rgba(0, 0, 0, 0.75) !important;
     display: block !important;
@@ -292,29 +126,23 @@ button.seedr-button-warning {
     padding: 0.5rem !important;
     height: 2.3125rem !important;
     width: 100% !important;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     transition: box-shadow 0.45s, border-color 0.45s ease-in-out;
 }
 
 #seedr-chrome-login-div label {
-    color: black !important;
-    margin: 0.5em !important;
-    margin-bottom: 1.5em !important;
+    color: var(--text-color) !important;
+    margin: 0.5em 0.5em 1.5em !important;
+    display: block;
 }
 
 #seedr-chrome-login-div input[type=submit],
 #seedr-chrome-login-div button {
-    padding-top: 0.625rem !important;
-    padding-right: 1.25rem !important;
-    padding-bottom: 0.6875rem !important;
-    padding-left: 1.25rem !important;
+    padding: 0.625rem 1.25rem 0.6875rem !important;
     font-size: 0.6875rem !important;
-    color: white !important;
-    background: #008cba !important;
+    color: var(--background-color) !important;
+    background: var(--primary-color) !important;
     border: none !important;
-    font-weight: normal !important;
-    box-shadow: none !important;
     border-radius: 3px;
+    cursor: pointer;
 }

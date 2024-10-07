@@ -1,40 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<link rel="stylesheet" type="text/css" href="default.css" />	<link rel="stylesheet" type="text/css" href="assets/foundation.min.css" />
-
-	<script type="text/javascript" src="assets/jquery-3.3.1.min.js"></script>
-	<script type="text/javascript" src="assets/jquery-ui-1.10.3.custom.min.js"></script>
-	<script type="text/javascript" src="assets/foundation.min.js"></script>
-	<script type="text/javascript" src="popup.js"></script>
-
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Seedr Extension</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			width: 300px;
+			padding: 10px;
+		}
+		#loading-div {
+			text-align: center;
+			display: none;
+		}
+		#visit-seedr-link {
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+			margin-bottom: 10px;
+		}
+		#visit-seedr-link img {
+			margin-right: 10px;
+		}
+		.info-row {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 5px;
+		}
+		#default-client {
+			margin-top: 10px;
+		}
+		#logged-out-li {
+			color: green;
+			margin-top: 10px;
+		}
+		#logout-li {
+			display: none;
+			margin-top: 10px;
+		}
+	</style>
 </head>
-<body style="height:230px">
-	<div id="loading-div">
-		<img src="images/ajax-loader.gif" />
+<body>
+<div id="loading-div">
+	<img src="images/ajax-loader.gif" alt="Loading...">
+</div>
+
+<div id="content-tab">
+	<div id="visit-seedr-link">
+		<img src="images/seedr.png" alt="Seedr logo">
+		<div>Visit Site ></div>
 	</div>
-	<div id="content-tab">
-		<ul id="user-menu">
-			<li id="visit-seedr-link">
-				<div>Visit Site ></div>
-				<img src="images/seedr.png"  />
-			</li>
-			<li>
-				<label><div id="seedr-status" style="float:right"></div>Status : </label>
-			</li>
-			<li>
-				<label><div id="seedr-username" style="float:right">None</div>User : </label>
-			</li>
-			<li id="default-client">
-				<input id="make-default-client-checkbox" type="checkbox">
-	      		<label for="make-default-client-checkbox">Default Torrent Client</label>
-			</li>
-			<li id="logged-out-li" style="background:#fafafa"><label><div style="color: green;">To use right click a torrent and pick "Add to Seedr" : Login is displayed only if required</div>
-			</label>
-			</li>
-			<li id="logout-li" style="display:none">
-				<input type="button" id="logout" class="button tiny radius" style="width:100%; margin:0" value="Log out extension"></input>
-			</li>
-		</ul>
+
+	<div class="info-row">
+		<span>Status:</span>
+		<span id="seedr-status"></span>
 	</div>
+
+	<div class="info-row">
+		<span>User:</span>
+		<span id="seedr-username">None</span>
+	</div>
+
+	<div id="default-client">
+		<input type="checkbox" id="make-default-client-checkbox">
+		<label for="make-default-client-checkbox">Default Torrent Client</label>
+	</div>
+
+	<div id="logged-out-li">
+		To use right click a torrent and pick "Add to Seedr" : Login is displayed only if required
+	</div>
+
+	<div id="logout-li">
+		<button id="logout">Logout</button>
+	</div>
+</div>
+
+<script src="popup.js"></script>
 </body>
+</html>

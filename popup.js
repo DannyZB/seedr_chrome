@@ -1,53 +1,65 @@
-function showLoading(){
-    $("#loading-div").delay(200).fadeIn(150);
+// Helper functions
+function showLoading() {
+	document.getElementById('loading-div').style.display = 'block';
 }
 
-function hideLoading(){
-    $("#loading-div").stop().fadeOut(50);
+function hideLoading() {
+	document.getElementById('loading-div').style.display = 'none';
 }
 
-$(document).ready(function(){
-	var background_page = chrome.extension.getBackgroundPage();
+function setStatus(status, username) {
+	const statusElement = document.getElementById('seedr-status');
+	const usernameElement = document.getElementById('seedr-username');
+	const logoutLi = document.getElementById('logout-li');
+	const loggedOutLi = document.getElementById('logged-out-li');
 
-	var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+	if (status === 'logged_in') {
+		statusElement.textContent = 'Logged In';
+		statusElement.style.color = 'green';
+		usernameElement.textContent = username || 'Logged In';
+		logoutLi.style.display = 'block';
+		loggedOutLi.style.display = 'none';
+	} else {
+		statusElement.textContent = 'Logged Out';
+		statusElement.style.color = 'grey';
+		usernameElement.textContent = 'None';
+		logoutLi.style.display = 'none';
+		loggedOutLi.style.display = 'block';
+	}
+}
+
+// Main function
+document.addEventListener('DOMContentLoaded', () => {
+	const background_page = chrome.extension.getBackgroundPage();
+	const is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 	// Load settings
-	if(background_page.s_storage.get('control_torrents')){
-		$("#make-default-client-checkbox").attr('checked','checked');
-	}
+	const makeDefaultClientCheckbox = document.getElementById('make-default-client-checkbox');
+	makeDefaultClientCheckbox.checked = background_page.s_storage.get('control_torrents');
 
-	$("#make-default-client-checkbox").click(function(){
-		background_page.s_storage.set('control_torrents',$(this).is(':checked'));
-		background_page.s_storage.set('control_magnets',$(this).is(':checked'));
+	makeDefaultClientCheckbox.addEventListener('change', (event) => {
+		background_page.s_storage.set('control_torrents', event.target.checked);
+		background_page.s_storage.set('control_magnets', event.target.checked);
 	});
-		
-	if(background_page.oauth.access_token === ''){ // Not logged in 
-		$('#seedr-status').css('color','grey');
-		$('#seedr-status').text('Logged Out');
-		$('#seedr-username').text('None');
-	} else { // Has a token - test validity
-		background_page.oauth.testToken(function(result){
-			if(result){
-				$('#seedr-status').css('color','green');
-				$('#seedr-status').text('Logged In');
-				$('#seedr-username').text('Logged In');
-				$('#logout-li').show();
-				$('#logged-out-li').hide();
-			} else {
-				$('#seedr-status').css('color','grey');
-				$('#seedr-status').text('Logged Out');
-				$('#seedr-username').text('None');
-			}
+
+	// Check login status
+	if (background_page.oauth.access_token === '') {
+		setStatus('logged_out');
+	} else {
+		background_page.oauth.testToken((result) => {
+			setStatus(result ? 'logged_in' : 'logged_out');
 		});
 	}
 
-	$('#logout').click(function(){
+	// Set up logout button
+	document.getElementById('logout').addEventListener('click', () => {
 		background_page.oauth.logout();
 		window.close();
 	});
 
-	$('#visit-seedr-link').click(function(){
-		window.open('https://www.seedr.cc/');
+	// Set up visit site link
+	document.getElementById('visit-seedr-link').addEventListener('click', () => {
+		chrome.tabs.create({ url: 'https://www.seedr.cc/' });
 		window.close();
 	});
 });

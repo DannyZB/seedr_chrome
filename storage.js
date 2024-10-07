@@ -1,4 +1,4 @@
-var SeedrStorage = function(){
+export var SeedrStorage = function(){
 	this.settings = {
 		control_torrents	: false,
 		control_magnets 	: false,
@@ -8,7 +8,7 @@ var SeedrStorage = function(){
 	};
 	
 	var s = this;
-	$.each(this.settings,function(key,value){
+	this.settings.each(function(key,value){
 		chrome.storage.local.get(key,function(data){
 			if(typeof data[key] !== 'undefined'){
 				s.settings[key] = data[key];
@@ -38,4 +38,4 @@ var SeedrStorage = function(){
 	};
 };
 
-var s_storage = new SeedrStorage();
+export var s_storage = new SeedrStorage();
