@@ -1,6 +1,8 @@
+console.log('test')
+
 import { s_storage } from "./storage.js";
-import { SeedrOAuth } from "./oauth.js";
-import "require.js";
+import { oauth } from "./oauth.js";
+import { notify } from "./notify.js";
 
 // Constants and global variables
 const notification_ids = {
@@ -11,13 +13,23 @@ const notification_ids = {
 
 let user_torrent_id = 0;
 
-const hasNotificationsPermissions = false;
 const is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
+let keepAliveInstance = null;
+function keepAlive() {
+    keepAliveInstance = setInterval(() => {
+        chrome.runtime.sendMessage({type: 'keep_alive'});
+        keepAlive()
+    }, 1000 * 25);
+}
+function stopKeepAlive() {
+    clearInterval(keepAliveInstance);
+}
+
 // Listener for download events
-const download_listener = (item, suggest) => {
+const download_listener = async (item, suggest) => {
     const ext = item.filename.split('.').pop();
-    if (ext.toLowerCase() === 'torrent' && s_storage.get("control_torrents") === true) {
+    if (ext.toLowerCase() === 'torrent' && await s_storage.get("control_torrents") === true) {
         chrome.downloads.cancel(item.id, (data) => {
             console.log(data);
         });
@@ -39,8 +51,8 @@ const download_listener = (item, suggest) => {
 const TORRENT_MIME_TYPE = 'application/x-bittorrent';
 const TORRENT_EXTENSION = '.torrent';
 
-const request_listener = (details) => {
-    if (!s_storage.get("control_torrents")) return;
+const request_listener = async (details) => {
+    if (!await s_storage.get("control_torrents")) return;
 
     const { statusCode, type, responseHeaders, url } = details;
 
@@ -101,48 +113,6 @@ const interceptTorrent = (url) => {
     });
 };
 
-// Set up listeners based on browser type
-if (!is_firefox) {
-    browser.downloads.onDeterminingFilename.addListener(download_listener);
-} else if (chrome.webRequest) {
-    chrome.webRequest.onHeadersReceived.addListener(
-        request_listener,
-        {urls: ["<all_urls>"], types: ["other"]},
-        ['blocking', 'responseHeaders']
-    );
-}
-
-// Helper functions
-function setIcon() {
-    // Implementation remains the same or can be updated if needed
-}
-
-function notify(message, type, timeout, buttons, tab_id) {
-    if (typeof tab_id === 'undefined') {
-        tab_id = false;
-    }
-
-    const notificationData = {
-        type: "notify",
-        notificationType: type,
-        message: message,
-        timeout: timeout,
-        buttons: buttons
-    };
-
-    if (tab_id !== false) {
-        chrome.tabs.sendMessage(tab_id, notificationData, {}, (response) => {});
-    } else {
-        chrome.tabs.query({active: true}, (tabs) => {
-            const tab = tabs[0];
-            if (tab) {
-                console.log(tab);
-                chrome.tabs.sendMessage(tab.id, notificationData, {}, (response) => {});
-            }
-        });
-    }
-}
-
 function seedr_sync() {
     chrome.tabs.query({}, (tabs) => {
         const message = {type: 'seedr_sync'};
@@ -155,6 +125,8 @@ function seedr_sync() {
 }
 
 function add_re(data, rcb, tab_id) {
+    stopKeepAlive()
+
     const notificationConfig = {
         message: '',
         type: '',
@@ -372,16 +344,16 @@ function add_re(data, rcb, tab_id) {
     );
 }
 
-function addMagnet(magnet, force, rcb, tab_id) {
-    if (typeof magnet !== 'undefined' && ((s_storage.get('control_magnets') === true) || force)) {
+async function addMagnet(magnet, force, rcb, tab_id) {
+    if (typeof magnet !== 'undefined' && ((await s_storage.get('control_magnets') === true) || force)) {
+        keepAlive()
         const query = {'torrent_magnet': magnet};
-        oauth.query('add_torrent', query,
-            (data) => add_re(data, rcb, tab_id),
-            (data) => rcb(data, tab_id)
-        );
+        oauth.query('add_torrent', query)
+            .then((data) => add_re(data, rcb, tab_id))
+            .catch((error) => rcb(error, tab_id));
         return true;
     } else {
-        if (s_storage.get('control_magnets') === false) {
+        if (await s_storage.get('control_magnets') === false) {
             rcb({result: 'use_default'});
         } else {
             rcb({result: false});
@@ -414,7 +386,7 @@ function get_file_content(url, callback) {
 let adding_torrent = false;
 let adding_timeout = false;
 
-function addTorrent(torrent, force, rcb, tab_id) {
+async function addTorrent(torrent, force, rcb, tab_id) {
     if (adding_timeout) {
         if (adding_torrent == torrent) return false;
         else {
@@ -426,20 +398,25 @@ function addTorrent(torrent, force, rcb, tab_id) {
     adding_timeout = setTimeout(() => {
         adding_torrent = false;
         adding_timeout = false;
-    }, 2000);
+    }, 5000);
 
-    if (typeof torrent !== 'undefined' && ((s_storage.get('control_torrents') === true) || force)) {
+    if (typeof torrent !== 'undefined' && ((await s_storage.get('control_torrents') === true) || force)) {
+        keepAlive()
         get_file_content(torrent, (file_data, filename) => {
             if (filename == '') {
                 filename = file_data.type == 'text/html' ? 'filler.html' : 'filler.torrent';
             }
-            oauth.query('add_torrent', {torrent_file: {data: file_data, filename: filename}, torrent_url: torrent},
-                (data) => add_re(data, rcb, tab_id),
-                (data) => rcb(data)
-            );
+            oauth.query('add_torrent', {
+                torrent_file: {data: file_data, filename: filename},
+                torrent_url: torrent
+            })
+                .then((data) => add_re(data, rcb, tab_id))
+                .catch((error) => rcb(error));
+
+            stopKeepAlive()
         });
     } else {
-        if (s_storage.get('control_torrents') === false) {
+        if (await s_storage.get('control_torrents') === false) {
             rcb({result: 'use_default'});
         } else {
             rcb({result: false});
@@ -449,60 +426,109 @@ function addTorrent(torrent, force, rcb, tab_id) {
     return true;
 }
 
-function listenerAddTorrent(message, sender, sendResponse) {
+async function listenerAddTorrent(message, sender, sendResponse) {
     if (typeof message.torrent_url !== 'undefined') {
-        addTorrent(message.torrent_url, message.force, sendResponse, sender.tab.id);
+        await addTorrent(message.torrent_url, message.force, sendResponse, sender.tab.id);
     } else if (message.magnet !== 'undefined') {
-        addMagnet(message.magnet, message.force, sendResponse, sender.tab.id);
+        await addMagnet(message.magnet, message.force, sendResponse, sender.tab.id);
     } else {
         sendResponse({result: 'no_data_passed'});
     }
 }
 
-const listener_function = (message, sender, sendResponse) => {
+const listener_function = async (message, sender, sendResponse) => {
     switch (message.type) {
+        case 'getStorage':
+            try {
+                const value = await s_storage.get(message.key);
+                sendResponse({value: value});
+            } catch (error) {
+                console.error('Error getting storage:', error);
+                sendResponse({error: error.message});
+            }
+            break;
+
+        case 'setStorage':
+            try {
+                await s_storage.set(message.key, message.value);
+                sendResponse({success: true});
+            } catch (error) {
+                console.error('Error setting storage:', error);
+                sendResponse({error: error.message});
+            }
+            break;
+
+        case 'checkLoginStatus':
+            try {
+                const result = await oauth.testToken();
+                sendResponse({
+                    loggedIn: result,
+                    username: oauth.username
+                });
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                sendResponse({loggedIn: false, error: error.message});
+            }
+            break;
+
+        case 'logout':
+            try {
+                await oauth.logout();
+                sendResponse({success: true});
+            } catch (error) {
+                console.error('Error logging out:', error);
+                sendResponse({error: error.message});
+            }
+            break;
+
         case 'add_torrent':
-            if (s_storage.get('control_torrents') === false && !message.force) {
+            if (await s_storage.get('control_torrents') === false && !message.force) {
                 sendResponse({result: 'use_default'});
             } else if (oauth.access_token === '') {
                 sendResponse({result: 'login_required'});
             } else {
-                listenerAddTorrent(message, sender, sendResponse);
+                await listenerAddTorrent(message, sender, sendResponse);
             }
             break;
+
         case 'login':
-            oauth.getAccessToken(message,
-                (data) => {
-                    sendResponse({result: data.result});
-                    chrome.tabs.query({}, (tabs) => {
-                        const loginMessage = {type: 'login_successful'};
-                        for (const tab of tabs) {
-                            if (tab.url) {
-                                chrome.tabs.sendMessage(tab.id, loginMessage);
-                            }
+            try {
+                const data = await oauth.getAccessToken(message);
+                sendResponse({result: data.result});
+                chrome.tabs.query({}, (tabs) => {
+                    const loginMessage = {type: 'login_successful'};
+                    for (const tab of tabs) {
+                        if (tab.url) {
+                            chrome.tabs.sendMessage(tab.id, loginMessage);
                         }
-                    });
-                }
-            );
+                    }
+                });
+            } catch (error) {
+                console.error('Login error:', error);
+                sendResponse({result: false});
+            }
             break;
+
         case 'open_window':
             chrome.tabs.create({url: message.url});
             break;
+
+        default:
+            console.warn('Unknown message type:', message.type);
+            sendResponse({error: 'Unknown message type'});
     }
-    return true;
+
+    return true; // Indicates that the response is sent asynchronously
 };
 
-// Set up message listeners
-if (is_firefox) {
-    browser.runtime.onMessage.addListener(listener_function);
-} else {
-    chrome.runtime.onMessage.addListener(listener_function);
-}
-
-// Initialize OAuth
-const oauth = new SeedrOAuth("password", "seedr_chrome", "https://www.seedr.cc/oauth_test/token.php", "https://www.seedr.cc/oauth_test/resource.php");
-
-setIcon();
+// External message listener
+const external_listener = async (request, sender, sendResponse) => {
+    if (request.func == 'login') {
+        await oauth.login(request.username, request.access_token, 3600 * 12, request.refresh_token);
+    } else if (request.func == 'logout') {
+        await oauth.logout();
+    }
+};
 
 // Context menu setup
 const contextMenuHandler = (info, tab) => {
@@ -515,24 +541,52 @@ const contextMenuHandler = (info, tab) => {
         chrome.tabs.sendMessage(tab.id, {type: "add_torrent", url: href, is_magnet: false}, (response) => {});
     }
 };
-
-chrome.contextMenus.create({
-    "title": "Add to Seedr",
-    "contexts": ["link"],
-    "onclick": contextMenuHandler
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.contextMenus.create({
+        "id": "addToSeedr",
+        "title": "Add to Seedr",
+        "contexts": ["link"]
+    });
 });
 
-// External message listener
-const external_listener = (request, sender, sendResponse) => {
-    if (request.func == 'login') {
-        oauth.login(request.username, request.access_token, 3600 * 12, request.refresh_token);
-    } else if (request.func == 'logout') {
-        oauth.logout();
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === "addToSeedr") {
+        contextMenuHandler(info, tab);
     }
-};
+});
+
+// Set up listeners based on browser type
+if (!is_firefox) {
+    chrome.downloads.onDeterminingFilename.addListener(download_listener);
+} else if (browser.webRequest) {
+    browser.webRequest.onHeadersReceived.addListener(
+        request_listener,
+        {urls: ["<all_urls>"], types: ["other"]},
+        ['blocking', 'responseHeaders']
+    );
+}
+
+// Set up message listeners
+if (is_firefox) {
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        listener_function(message, sender, sendResponse);
+        return true; // Indicates async response
+    });
+} else {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        listener_function(message, sender, sendResponse);
+        return true; // Indicates async response
+    });
+}
 
 if (is_firefox) {
-    browser.runtime.onMessageExternal.addListener(external_listener);
+    browser.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+        external_listener(request, sender, sendResponse);
+        return true; // Indicates async response
+    });
 } else {
-    chrome.runtime.onMessageExternal.addListener(external_listener);
+    chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+        external_listener(request, sender, sendResponse);
+        return true;
+    });
 }

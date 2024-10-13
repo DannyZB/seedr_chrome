@@ -1,148 +1,214 @@
 :root {
-    --primary-color: #008cba;
-    --error-color: #f04124;
-    --success-color: #167ce8;
-    --warning-color: #ffd01c;
-    --border-color: #dedede;
-    --text-color: #000;
-    --background-color: #fff;
+    --seedr-primary-color: #4a90e2;
+    --seedr-error-color: #dc3545;
+    --seedr-success-color: #28a745;
+    --seedr-warning-color: #ffc107;
+    --seedr-border-color: #e0e0e0;
+    --seedr-text-color: #333333;
+    --seedr-background-color: #ffffff;
+    --seedr-box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    --seedr-border-radius: 4px;
+    --seedr-transition: all 0.3s ease;
 }
 
-/* Noty container */
-.noty_topRight_layout_container {
-    box-shadow: 1px 1px 6px #606060 !important;
+/* Seedr-specific elements */
+.seedr-element {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+    color: var(--seedr-text-color);
+    line-height: 1.4;
+    margin: 10px 0;
 }
 
 /* Seedr buttons */
 .seedr-button {
-    border-radius: 3px;
-    border: 1px solid var(--border-color);
-    padding: 7px;
-    color: var(--text-color);
-    font-size: 10pt;
+    border-radius: var(--seedr-border-radius);
+    border: 1px solid var(--seedr-border-color);
+    padding: 8px 12px;
+    color: var(--seedr-text-color);
+    font-size: 14px;
     cursor: pointer;
     text-align: center;
-    display: block;
-    margin: 0 0 10px 0;
-    width: 100%;
-    box-sizing: border-box !important;
+    display: inline-block;
+    margin: 10px 0;
+    background-color: var(--seedr-background-color);
+    transition: var(--seedr-transition);
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .seedr-button-success {
-    background: var(--success-color);
-    color: var(--background-color);
+    background-color: var(--seedr-success-color);
+    color: var(--seedr-background-color);
+    border-color: var(--seedr-success-color);
 }
 
 .seedr-button-warning {
-    background: var(--warning-color);
-    color: var(--background-color);
+    background-color: var(--seedr-warning-color);
+    color: var(--seedr-text-color);
+    border-color: var(--seedr-warning-color);
 }
 
-/* Loading div */
-#seedr-chrome-loading-div {
+.seedr-button:hover {
+    opacity: 0.9;
+}
+
+/* notifications styling */
+
+.seedr-notification-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin-top: 200px;
-    transition: 1s;
-    z-index: 2000;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.seedr-notification {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 15px;
+    max-width: 320px;
+    padding: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.seedr-notification-success {
+    border-left: 4px solid #28a745;
+    background-color: #f0fff4;
+}
+
+.seedr-notification-warning {
+    border-left: 4px solid #ffc107;
+    background-color: #fffbeb;
+}
+
+.seedr-notification-error {
+    border-left: 4px solid #dc3545;
+    background-color: #fff5f5;
+}
+
+.seedr-notification-message {
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333333;
+}
+
+.seedr-notification-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.seedr-notification button {
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 8px;
+    padding: 6px 12px;
+    transition: background-color 0.2s ease;
+}
+
+.seedr-notification button:hover {
+    background-color: #3a7bc8;
+}
+
+.seedr-notification-close {
+    background-color: transparent !important;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 18px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    transition: color 0.2s ease;
+}
+
+.seedr-notification-close:hover {
+    color: #333;
 }
 
 /* Reset styles */
 .seedr-reset {
     all: initial;
     box-sizing: border-box;
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Login frame */
-#seedr-chrome-login-frame {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    padding-top: 10% !important;
-    background: rgba(255, 255, 255, 0.6) !important;
-    font-family: 'Open Sans', Arial, sans-serif !important;
-    font-size: 1rem !important;
-    text-align: center !important;
-    z-index: 1000000 !important;
-    display: none;
-    transition: 1s;
+#seedr-chrome-loading-div {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 250px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 2147483647;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Login div */
-#seedr-chrome-login-div {
-    font-size: 1rem !important;
+#seedr-chrome-loading-div .seedr-loader-content {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
 }
 
-#seedr-chrome-login-div > div {
-    width: 400px !important;
-    background: var(--background-color) !important;
-    border-radius: 5px !important;
-    border: 1px solid #aaa !important;
-    padding: 20px !important;
-    position: absolute !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    text-align: left !important;
+#seedr-chrome-loading-div .seedr-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
 }
 
-#seedr-chrome-login-div small.error {
-    display: block;
-    padding: 0.375rem 0.5625rem 0.5625rem;
-    margin-top: -1px !important;
-    margin-bottom: 1rem;
-    font-size: 0.75rem !important;
-    font-style: italic;
-    background: var(--error-color);
-    color: var(--background-color);
+#seedr-chrome-loading-div .seedr-loader-text {
+    flex-grow: 1;
 }
 
-#seedr-chrome-login-div a {
-    color: var(--primary-color) !important;
-    text-decoration: none !important;
-    font-size: 0.8rem !important;
+#seedr-chrome-loading-div .seedr-loader-text h3 {
+    font-size: 16px;
+    color: #333333;
+    margin: 0 0 5px 0;
+    font-weight: 500;
 }
 
-#seedr-chrome-login-div p {
-    margin: 0.5rem !important;
+#seedr-chrome-loading-div .seedr-loader-text p {
+    font-size: 12px;
+    color: #666666;
+    margin: 0;
 }
 
-#seedr-chrome-login-div input[type="text"],
-#seedr-chrome-login-div input[type="password"],
-#seedr-chrome-login-div input[type="email"] {
-    -webkit-appearance: none !important;
-    background-color: var(--background-color) !important;
-    border: 1px solid #ccc !important;
-    border-radius: 0 !important;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-    color: rgba(0, 0, 0, 0.75) !important;
-    display: block !important;
-    font-size: 0.875rem !important;
-    margin: 0.2rem 0 1rem 0 !important;
-    padding: 0.5rem !important;
-    height: 2.3125rem !important;
-    width: 100% !important;
-    box-sizing: border-box;
-    transition: box-shadow 0.45s, border-color 0.45s ease-in-out;
+#seedr-chrome-loading-div .seedr-progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
 }
 
-#seedr-chrome-login-div label {
-    color: var(--text-color) !important;
-    margin: 0.5em 0.5em 1.5em !important;
-    display: block;
+#seedr-chrome-loading-div .seedr-progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background-color: #8e44ad;
+    transition: width 0.3s ease;
 }
 
-#seedr-chrome-login-div input[type=submit],
-#seedr-chrome-login-div button {
-    padding: 0.625rem 1.25rem 0.6875rem !important;
-    font-size: 0.6875rem !important;
-    color: var(--background-color) !important;
-    background: var(--primary-color) !important;
-    border: none !important;
-    border-radius: 3px;
+#seedr-chrome-loading-div .seedr-cancel-button {
+    align-self: flex-end;
+    background-color: transparent;
+    border: none;
+    color: #8e44ad;
     cursor: pointer;
+    font-size: 12px;
+    padding: 5px;
 }

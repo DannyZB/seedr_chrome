@@ -5,56 +5,148 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Seedr Extension</title>
 	<style>
+		:root {
+			--primary-blue: #4a90e2;
+			--primary-purple: #8e44ad;
+			--light-blue: #e8f0fe;
+			--text-color: #333;
+			--border-radius: 8px;
+		}
+
 		body {
-			font-family: Arial, sans-serif;
-			width: 300px;
-			padding: 10px;
+			font-family: 'Segoe UI', Arial, sans-serif;
+			width: 350px;
+			padding: 50px 20px;
+			background-color: var(--light-blue);
+			color: var(--text-color);
+			margin: 0;
+			font-size: 16px;
 		}
-		#loading-div {
-			text-align: center;
-			display: none;
-		}
-		#visit-seedr-link {
+
+		.header {
 			display: flex;
+			justify-content: space-between;
 			align-items: center;
-			cursor: pointer;
-			margin-bottom: 10px;
+			margin-bottom: 24px;
 		}
-		#visit-seedr-link img {
-			margin-right: 10px;
+
+		.logo {
+			height: 45px;
+			width: auto;
 		}
+
+		#visit-seedr-link {
+			background-color: var(--primary-blue);
+			color: white;
+			padding: 10px 16px;
+			border-radius: var(--border-radius);
+			text-decoration: none;
+			font-size: 16px;
+			transition: background-color 0.3s ease;
+		}
+
+		#visit-seedr-link:hover {
+			background-color: #3a7bc8;
+		}
+
 		.info-row {
 			display: flex;
 			justify-content: space-between;
-			margin-bottom: 5px;
+			margin-bottom: 16px;
+			background-color: white;
+			padding: 14px;
+			border-radius: var(--border-radius);
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 		}
+
 		#default-client {
-			margin-top: 10px;
+			margin-top: 20px;
+			display: flex;
+			align-items: center;
 		}
+
+		#make-default-client-checkbox {
+			margin-right: 10px;
+			transform: scale(1.2);
+		}
+
 		#logged-out-li {
-			color: green;
-			margin-top: 10px;
+			margin-top: 20px;
+			padding: 16px;
+			background-color: #e8f5e9;
+			border-radius: var(--border-radius);
+			font-size: 14px;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+			border-left: 4px solid #4caf50;
 		}
+
 		#logout-li {
 			display: none;
-			margin-top: 10px;
+		}
+
+		#logout {
+			display: block;
+			margin-top: 20px;
+			background-color: var(--primary-purple);
+			color: white;
+			border: none;
+			padding: 12px 18px;
+			border-radius: var(--border-radius);
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+			width: 100%;
+			font-size: 16px;
+		}
+
+		#logout:hover {
+			background-color: #7d3c98;
+		}
+
+		.explanation {
+			font-size: 14px;
+			color: #666;
+			margin-top: 8px;
+		}
+
+		#loading-div {
+			display: none;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: rgba(255, 255, 255, 0.8);
+			justify-content: center;
+			align-items: center;
+		}
+
+		#close-button {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: none;
+			border: none;
+			font-size: 20px;
+			cursor: pointer;
 		}
 	</style>
 </head>
 <body>
 <div id="loading-div">
-	<img src="images/ajax-loader.gif" alt="Loading...">
+	<img src="images/loading.gif" alt="Loading...">
 </div>
 
+<button id="close-button">&times;</button>
+
 <div id="content-tab">
-	<div id="visit-seedr-link">
-		<img src="images/seedr.png" alt="Seedr logo">
-		<div>Visit Site ></div>
+	<div class="header">
+		<img src="images/seedr.png" alt="Seedr logo" class="logo">
+		<a href="#" id="visit-seedr-link">Visit Seedr Site</a>
 	</div>
 
 	<div class="info-row">
 		<span>Status:</span>
-		<span id="seedr-status"></span>
+		<span id="seedr-status">Logged Out</span>
 	</div>
 
 	<div class="info-row">
@@ -64,11 +156,14 @@
 
 	<div id="default-client">
 		<input type="checkbox" id="make-default-client-checkbox">
-		<label for="make-default-client-checkbox">Default Torrent Client</label>
+		<label for="make-default-client-checkbox">Set as Default Torrent Client</label>
+	</div>
+	<div class="explanation">
+		Capture all .torrent and magnet links and send to Seedr
 	</div>
 
 	<div id="logged-out-li">
-		To use right click a torrent and pick "Add to Seedr" : Login is displayed only if required
+		To use, right-click a torrent and select "Add to Seedr". Login is displayed only if required.
 	</div>
 
 	<div id="logout-li">

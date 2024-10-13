@@ -1,10 +1,12 @@
 // Helper functions
 function showLoading() {
 	document.getElementById('loading-div').style.display = 'block';
+	document.getElementById('content-tab').style.display = 'none';
 }
 
 function hideLoading() {
 	document.getElementById('loading-div').style.display = 'none';
+	document.getElementById('content-tab').style.display = 'block';
 }
 
 function setStatus(status, username) {
@@ -29,37 +31,69 @@ function setStatus(status, username) {
 }
 
 // Main function
-document.addEventListener('DOMContentLoaded', () => {
-	const background_page = chrome.extension.getBackgroundPage();
-	const is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+document.addEventListener('DOMContentLoaded', async () => {
+	const makeDefaultClientCheckbox = document.getElementById('make-default-client-checkbox');
+	const logoutButton = document.getElementById('logout');
+	const visitSeedrLink = document.getElementById('visit-seedr-link');
+	const closeButton = document.getElementById('close-button');
 
 	// Load settings
-	const makeDefaultClientCheckbox = document.getElementById('make-default-client-checkbox');
-	makeDefaultClientCheckbox.checked = background_page.s_storage.get('control_torrents');
+	showLoading();
+	try {
+		const result = await chrome.runtime.sendMessage({type: 'getStorage', key: 'control_torrents'});
+		makeDefaultClientCheckbox.checked = result.value || false;
+	} catch (error) {
+		console.error('Error loading settings:', error);
+	} finally {
+		hideLoading();
+	}
 
-	makeDefaultClientCheckbox.addEventListener('change', (event) => {
-		background_page.s_storage.set('control_torrents', event.target.checked);
-		background_page.s_storage.set('control_magnets', event.target.checked);
+	makeDefaultClientCheckbox.addEventListener('change', async (event) => {
+		showLoading();
+		try {
+			await chrome.runtime.sendMessage({type: 'setStorage', key: 'control_torrents', value: event.target.checked});
+			await chrome.runtime.sendMessage({type: 'setStorage', key: 'control_magnets', value: event.target.checked});
+		} catch (error) {
+			console.error('Error saving settings:', error);
+		} finally {
+			hideLoading();
+		}
 	});
 
 	// Check login status
-	if (background_page.oauth.access_token === '') {
+	showLoading();
+	try {
+		const response = await chrome.runtime.sendMessage({type: 'checkLoginStatus'});
+		setStatus(response.loggedIn ? 'logged_in' : 'logged_out', response.username);
+	} catch (error) {
+		console.error('Error checking login status:', error);
 		setStatus('logged_out');
-	} else {
-		background_page.oauth.testToken((result) => {
-			setStatus(result ? 'logged_in' : 'logged_out');
-		});
+	} finally {
+		hideLoading();
 	}
 
 	// Set up logout button
-	document.getElementById('logout').addEventListener('click', () => {
-		background_page.oauth.logout();
-		window.close();
+	logoutButton.addEventListener('click', async () => {
+		showLoading();
+		try {
+			await chrome.runtime.sendMessage({type: 'logout'});
+			setStatus('logged_out');
+		} catch (error) {
+			console.error('Error logging out:', error);
+		} finally {
+			hideLoading();
+		}
 	});
 
 	// Set up visit site link
-	document.getElementById('visit-seedr-link').addEventListener('click', () => {
+	visitSeedrLink.addEventListener('click', (e) => {
+		e.preventDefault();
 		chrome.tabs.create({ url: 'https://www.seedr.cc/' });
+		window.close();
+	});
+
+	// Set up close button
+	closeButton.addEventListener('click', () => {
 		window.close();
 	});
 });
