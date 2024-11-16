@@ -56,7 +56,10 @@ function simulateProgress() {
 }
 
 function showLogin() {
-	window.open('https://www.seedr.cc/auth/pages/login?extension=1', 'seedr-extension-login');
+	chrome.runtime.sendMessage({
+		type: 'open_window',
+		url: 'https://www.seedr.cc/auth/pages/login?extension=1'
+	});
 }
 
 function addTorrent(url, is_magnet, force = false) {

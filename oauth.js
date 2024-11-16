@@ -83,6 +83,26 @@ export const oauth = {
     }
   },
 
+  async handleSuccessfulLogin(data) {
+    this.access_token = data.access_token;
+
+    if (data.refresh_token) {
+      this.refresh_token = data.refresh_token;
+      this.username = data.username;
+    }
+
+    try {
+      await s_storage.set('access_token', data.access_token);
+      await s_storage.set('refresh_token', data.refresh_token);
+      await s_storage.set('username', data.username);
+    } catch (error) {
+      console.error('Error saving login data:', error);
+    }
+
+    this.scheduleTokenRefresh(data.expires_in * 1000 - 180000);
+    this.notifyLoginSuccess();
+  },
+
   async getAccessToken(post_params) {
     const base_data = {
       "grant_type": this.grant_type,

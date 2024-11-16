@@ -30,10 +30,17 @@ function stopKeepAlive() {
 const download_listener = async (item, suggest) => {
     const ext = item.filename.split('.').pop();
     if (ext.toLowerCase() === 'torrent' && await s_storage.get("control_torrents") === true) {
-        chrome.downloads.cancel(item.id, (data) => {
-            console.log(data);
-        });
+        // First suggest cancelling the download
+        // suggest({
+        //     filename: '',
+        //     conflictAction: 'uniquify',
+        //     cancel: true
+        // });
 
+        // Then ensure it's cancelled
+        chrome.downloads.cancel(item.id);
+
+        // Send message to tab
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             const tab = tabs[0];
             console.log(tab);
@@ -41,13 +48,19 @@ const download_listener = async (item, suggest) => {
                 type: "add_torrent",
                 url: item.url,
                 is_magnet: false
-            }, (response) => {});
+            }, (response) => {
+                // Handle potential error if message fails
+                if (chrome.runtime.lastError) {
+                    console.log('Message sending failed:', chrome.runtime.lastError);
+                }
+            });
         });
+
         return true;  // handling asynchronously
-    } else {
-        return false;
     }
+    return false;
 };
+
 const TORRENT_MIME_TYPE = 'application/x-bittorrent';
 const TORRENT_EXTENSION = '.torrent';
 
@@ -363,24 +376,20 @@ async function addMagnet(magnet, force, rcb, tab_id) {
 }
 
 function get_file_content(url, callback) {
-    const oReq = new XMLHttpRequest();
-    oReq.open("GET", url, true);
-    oReq.responseType = "blob";
+    fetch(url)
+        .then(response => {
+            const header = response.headers.get('Content-Disposition');
+            let filename;
 
-    oReq.onload = (oEvent) => {
-        const blob = oReq.response;
-        const header = oReq.getResponseHeader('Content-Disposition');
-        let filename;
+            if (header) {
+                filename = header.match(/filename\*?=(?:UTF-8)?'?'?\\?"?([0-9\w\^\&\'\@\{\}\[\}\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+)"?'?;?/)[1];
+            } else {
+                filename = url.substring(url.lastIndexOf('/') + 1);
+            }
 
-        if (header) {
-            filename = header.match(/filename\*?=(?:UTF-8)?'?'?\\?"?([0-9\w\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+)"?'?;?/)[1];
-        } else {
-            filename = oReq.responseURL.substring(oReq.responseURL.lastIndexOf('/') + 1);
-        }
-        callback(blob, filename);
-    };
-
-    oReq.send(null);
+            return response.blob().then(blob => callback(blob, filename));
+        })
+        .catch(error => console.error('Error fetching file content:', error));
 }
 
 let adding_torrent = false;
