@@ -2,8 +2,13 @@
   "manifest_version": 3,
   "name": "Seedr",
   "description": "Get Stuff Instantly -- Download and play it anywhere :-)",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqgZmjeOdp8l28WluN4YxGEi2dCCb+ktKKS9fSDrUfh6lWfJsiW6OIP6YahPu1CK4ST87Hslmz2Kfhnn5/kiN1+WeEenu9gEZc6+NiU8ethOjtN+XqkiiRDji7amot1Gw0OrucSUAiLqBBWOVnS+KRChPiq3PlumdRnOX7PqL2PcoWQX6DV2n/eQy8/wN2BBGcz57qKxvfA/pbEqRNsBPQOhblGjmqd4bSE8SeIIBV48oiVCu1H3lB1PmRUNtGwGpAPcZx+d1sLEmSBaLYbaZpLsoydHb3YKFXAzH0EmWouawI9K8GerywE2BQwSFdoGV4wN/Lv4vx/OKRPB9HeoKpQIDAQAB",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{f044e896-58f6-4398-bab7-f7f89bf91d38}"
+    }
+  },
   "background": {
     "service_worker": "background.js",
     "scripts": [
@@ -17,7 +22,8 @@
     "contextMenus",
     "downloads",
     "activeTab",
-    "webRequest"
+    "webRequest",
+    "webRequestBlocking"
   ],
   "host_permissions": [
     "http://*/*",
