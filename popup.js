@@ -126,7 +126,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 					btn.style.cssText = 'background:#4a90e2; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; flex-shrink:0; margin-left:8px;';
 					btn.addEventListener('click', () => {
 						const isMagnet = link.type === 'magnet';
-						chrome.runtime.sendMessage({ type: 'add_torrent', url: link.url, is_magnet: isMagnet });
+						const msg = isMagnet
+							? { type: 'add_torrent', magnet: link.url, force: true }
+							: { type: 'add_torrent', torrent_url: link.url, force: true };
+						chrome.runtime.sendMessage(msg);
 						btn.textContent = '\u2713';
 						btn.style.backgroundColor = '#27ae60';
 						btn.disabled = true;
@@ -139,7 +142,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 				addAllBtn.addEventListener('click', () => {
 					links.forEach(link => {
-						chrome.runtime.sendMessage({ type: 'add_torrent', url: link.url, is_magnet: link.type === 'magnet' });
+						const isMagnet = link.type === 'magnet';
+						const msg = isMagnet
+							? { type: 'add_torrent', magnet: link.url, force: true }
+							: { type: 'add_torrent', torrent_url: link.url, force: true };
+						chrome.runtime.sendMessage(msg);
 					});
 					addAllBtn.textContent = 'Added!';
 					addAllBtn.style.backgroundColor = '#27ae60';
@@ -200,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 					btn.textContent = 'Add';
 					btn.style.cssText = 'background:#4a90e2; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; flex-shrink:0; margin-left:8px;';
 					btn.addEventListener('click', () => {
-						chrome.runtime.sendMessage({ type: 'add_torrent', url: t.magnet, is_magnet: true });
+						chrome.runtime.sendMessage({ type: 'add_torrent', magnet: t.magnet, force: true });
 						btn.textContent = '\u2713';
 						btn.style.backgroundColor = '#27ae60';
 						btn.disabled = true;

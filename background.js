@@ -445,10 +445,11 @@ async function addTorrent(torrent, force, rcb, tab_id) {
 }
 
 async function listenerAddTorrent(message, sender, sendResponse) {
+    const tabId = sender.tab?.id;
     if (typeof message.torrent_url !== 'undefined') {
-        await addTorrent(message.torrent_url, message.force, sendResponse, sender.tab.id);
+        await addTorrent(message.torrent_url, message.force, sendResponse, tabId);
     } else if (typeof message.magnet !== 'undefined') {
-        await addMagnet(message.magnet, message.force, sendResponse, sender.tab.id);
+        await addMagnet(message.magnet, message.force, sendResponse, tabId);
     } else {
         sendResponse({result: 'no_data_passed'});
     }

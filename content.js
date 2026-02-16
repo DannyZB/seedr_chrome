@@ -361,7 +361,7 @@ function buildFilteredHtml() {
 	// 1. Remove noise elements entirely
 	clone.querySelectorAll(
 		'img, video, audio, picture, source, embed, object, ' +
-		'style, svg, canvas, noscript, iframe, header, footer, nav'
+		'style, svg, canvas, noscript, iframe, header, footer, nav, meta'
 	).forEach(el => el.remove());
 
 	// 2. Keep inline scripts ONLY if they contain torrent/magnet patterns
