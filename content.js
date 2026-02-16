@@ -34,21 +34,26 @@ function showLoading() {
 	loadingDiv.style.display = 'block';
 }
 
+let _progressInterval = null;
+
 function hideLoading() {
 	const loadingDiv = document.getElementById('seedr-chrome-loading-div');
 	if (loadingDiv) loadingDiv.style.display = 'none';
 
 	// Reset progress bar
+	if (_progressInterval) { clearInterval(_progressInterval); _progressInterval = null; }
 	const progressBar = document.querySelector('.seedr-progress-bar-fill');
 	if (progressBar) progressBar.style.width = '0';
 }
 
 function simulateProgress() {
+	if (_progressInterval) { clearInterval(_progressInterval); _progressInterval = null; }
 	const progressBar = document.querySelector('.seedr-progress-bar-fill');
 	let width = 0;
-	const interval = setInterval(() => {
+	_progressInterval = setInterval(() => {
 		if (width >= 100) {
-			clearInterval(interval);
+			clearInterval(_progressInterval);
+			_progressInterval = null;
 		} else {
 			width++;
 			progressBar.style.width = width + '%';
@@ -214,6 +219,7 @@ function addTorrent(url, is_magnet, force = false) {
 
 	chrome.runtime.sendMessage(data, (response) => {
 		hideLoading();
+		if (!response) return;
 		if (response.result === "use_default") {
 			window.location.href = url;
 		} else if (response.result === 'login_required') {

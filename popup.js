@@ -115,9 +115,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 					const label = document.createElement('span');
 					label.style.cssText = 'font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px;';
-					const displayName = link.type === 'magnet'
-						? (link.url.match(/dn=([^&]*)/)?.[1]?.replace(/\+/g, ' ')?.substring(0, 40) || link.url.substring(0, 50))
-						: (link.url.split('/').pop()?.substring(0, 40) || link.url.substring(0, 50));
+					let displayName;
+					if (link.type === 'magnet') {
+						const raw = link.url.match(/dn=([^&]*)/)?.[1]?.replace(/\+/g, ' ') || '';
+						try { displayName = decodeURIComponent(raw).substring(0, 40); } catch (e) { displayName = raw.substring(0, 40); }
+						if (!displayName) displayName = link.url.substring(0, 50);
+					} else {
+						displayName = link.url.split('/').pop()?.substring(0, 40) || link.url.substring(0, 50);
+					}
 					label.textContent = (link.type === 'magnet' ? '\u{1F9F2} ' : '\u{1F4E6} ') + displayName;
 					label.title = link.url;
 
@@ -129,10 +134,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 						const msg = isMagnet
 							? { type: 'add_torrent', magnet: link.url, force: true }
 							: { type: 'add_torrent', torrent_url: link.url, force: true };
-						chrome.runtime.sendMessage(msg);
-						btn.textContent = '\u2713';
-						btn.style.backgroundColor = '#27ae60';
+						btn.textContent = '...';
 						btn.disabled = true;
+						chrome.runtime.sendMessage(msg, (response) => {
+							if (response && response.result === true) {
+								btn.textContent = '\u2713';
+								btn.style.backgroundColor = '#27ae60';
+							} else if (response && response.result === 'login_required') {
+								btn.textContent = 'Login';
+								btn.style.backgroundColor = '#e74c3c';
+								btn.disabled = false;
+							} else {
+								btn.textContent = 'Retry';
+								btn.style.backgroundColor = '#e74c3c';
+								btn.disabled = false;
+							}
+						});
 					});
 
 					row.appendChild(label);
@@ -141,16 +158,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 				});
 
 				addAllBtn.addEventListener('click', () => {
-					links.forEach(link => {
-						const isMagnet = link.type === 'magnet';
-						const msg = isMagnet
-							? { type: 'add_torrent', magnet: link.url, force: true }
-							: { type: 'add_torrent', torrent_url: link.url, force: true };
-						chrome.runtime.sendMessage(msg);
-					});
-					addAllBtn.textContent = 'Added!';
-					addAllBtn.style.backgroundColor = '#27ae60';
+					const batchLinks = links.map(link => ({
+						url: link.url,
+						isMagnet: link.type === 'magnet'
+					}));
+					addAllBtn.textContent = 'Adding...';
 					addAllBtn.disabled = true;
+					chrome.runtime.sendMessage({
+						type: 'add_torrents_batch',
+						links: batchLinks,
+						force: true
+					}, (response) => {
+						if (response && response.success !== undefined) {
+							const { success, failed, wishlist } = response;
+							let msg = '';
+							if (success > 0) msg += `${success} added`;
+							if (wishlist > 0) msg += `${msg ? ', ' : ''}${wishlist} wishlist`;
+							if (failed > 0) msg += `${msg ? ', ' : ''}${failed} failed`;
+							addAllBtn.textContent = msg || 'Done';
+							addAllBtn.style.backgroundColor = failed === 0 ? '#27ae60' : '#e67e22';
+						} else if (response && response.result === 'login_required') {
+							addAllBtn.textContent = 'Login Required';
+							addAllBtn.style.backgroundColor = '#e74c3c';
+							addAllBtn.disabled = false;
+						} else {
+							addAllBtn.textContent = 'Failed';
+							addAllBtn.style.backgroundColor = '#e74c3c';
+							addAllBtn.disabled = false;
+						}
+					});
 				});
 			}
 		}
@@ -207,10 +243,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 					btn.textContent = 'Add';
 					btn.style.cssText = 'background:#4a90e2; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; flex-shrink:0; margin-left:8px;';
 					btn.addEventListener('click', () => {
-						chrome.runtime.sendMessage({ type: 'add_torrent', magnet: t.magnet, force: true });
-						btn.textContent = '\u2713';
-						btn.style.backgroundColor = '#27ae60';
+						btn.textContent = '...';
 						btn.disabled = true;
+						chrome.runtime.sendMessage({ type: 'add_torrent', magnet: t.magnet, force: true }, (response) => {
+							if (response && response.result === true) {
+								btn.textContent = '\u2713';
+								btn.style.backgroundColor = '#27ae60';
+							} else {
+								btn.textContent = 'Retry';
+								btn.style.backgroundColor = '#e74c3c';
+								btn.disabled = false;
+							}
+						});
 					});
 
 					row.appendChild(label);
