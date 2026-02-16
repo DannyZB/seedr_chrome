@@ -105,8 +105,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 			const links = response?.links || [];
 			const section = document.getElementById('found-links-section');
 			const list = document.getElementById('found-links-list');
-			const addAllBtn = document.getElementById('add-all-btn');
-
 			if (links.length > 0) {
 				section.style.display = 'block';
 				links.forEach((link, i) => {
@@ -157,37 +155,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 					list.appendChild(row);
 				});
 
-				addAllBtn.addEventListener('click', () => {
-					const batchLinks = links.map(link => ({
-						url: link.url,
-						isMagnet: link.type === 'magnet'
-					}));
-					addAllBtn.textContent = 'Adding...';
-					addAllBtn.disabled = true;
-					chrome.runtime.sendMessage({
-						type: 'add_torrents_batch',
-						links: batchLinks,
-						force: true
-					}, (response) => {
-						if (response && response.success !== undefined) {
-							const { success, failed, wishlist } = response;
-							let msg = '';
-							if (success > 0) msg += `${success} added`;
-							if (wishlist > 0) msg += `${msg ? ', ' : ''}${wishlist} wishlist`;
-							if (failed > 0) msg += `${msg ? ', ' : ''}${failed} failed`;
-							addAllBtn.textContent = msg || 'Done';
-							addAllBtn.style.backgroundColor = failed === 0 ? '#27ae60' : '#e67e22';
-						} else if (response && response.result === 'login_required') {
-							addAllBtn.textContent = 'Login Required';
-							addAllBtn.style.backgroundColor = '#e74c3c';
-							addAllBtn.disabled = false;
-						} else {
-							addAllBtn.textContent = 'Failed';
-							addAllBtn.style.backgroundColor = '#e74c3c';
-							addAllBtn.disabled = false;
-						}
-					});
-				});
 			}
 		}
 	} catch (error) {
@@ -249,6 +216,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 							if (response && response.result === true) {
 								btn.textContent = '\u2713';
 								btn.style.backgroundColor = '#27ae60';
+							} else if (response && response.result === 'login_required') {
+								btn.textContent = 'Login';
+								btn.style.backgroundColor = '#e74c3c';
+								btn.disabled = false;
 							} else {
 								btn.textContent = 'Retry';
 								btn.style.backgroundColor = '#e74c3c';
