@@ -352,6 +352,48 @@ function scanPageForLinks() {
 	return Array.from(found.values());
 }
 
+// Build privacy-filtered HTML for server relay.
+// Strips ALL text, media, styles. Keeps only element structure + attributes
+// (href, data-*, onclick, action) which is all the server parser needs.
+function buildFilteredHtml() {
+	const clone = document.cloneNode(true);
+
+	// 1. Remove noise elements entirely
+	clone.querySelectorAll(
+		'img, video, audio, picture, source, embed, object, ' +
+		'style, svg, canvas, noscript, iframe, header, footer, nav'
+	).forEach(el => el.remove());
+
+	// 2. Keep inline scripts ONLY if they contain torrent/magnet patterns
+	clone.querySelectorAll('script:not([src])').forEach(el => {
+		if (!/(magnet:\?xt=urn:btih:|\.torrent)/i.test(el.textContent)) {
+			el.remove();
+		}
+	});
+	clone.querySelectorAll('script[src]').forEach(el => el.remove());
+
+	// 3. Strip ALL text nodes — server only reads element attributes
+	const walker = clone.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+	const textNodes = [];
+	while (walker.nextNode()) textNodes.push(walker.currentNode);
+	for (const node of textNodes) node.textContent = '';
+
+	// 4. Strip styling attributes
+	clone.querySelectorAll('*').forEach(el => {
+		el.removeAttribute('style');
+	});
+
+	// 5. Clear form values (passwords, personal data)
+	clone.querySelectorAll('input, textarea, select').forEach(el => {
+		el.removeAttribute('value');
+		el.removeAttribute('placeholder');
+	});
+
+	let html = clone.documentElement.outerHTML;
+	if (html.length > 512 * 1024) html = html.substring(0, 512 * 1024);
+	return html;
+}
+
 // Process new links
 function processNewLinks(addedNodes) {
 	addedNodes.forEach(node => {
@@ -492,6 +534,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (document.location.hostname === 'www.seedr.cc') {
 				location.href = "javascript:syncFolder(true); void 0";
 			}
+			break;
+		case 'get_filtered_html':
+			sendResponse({
+				html: buildFilteredHtml(),
+				url: window.location.href
+			});
 			break;
 	}
 
