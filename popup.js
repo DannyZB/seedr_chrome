@@ -96,4 +96,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 	closeButton.addEventListener('click', () => {
 		window.close();
 	});
+
+	// Load found links for active tab
+	try {
+		const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+		if (tab) {
+			const response = await chrome.runtime.sendMessage({ type: 'get_tab_links', tabId: tab.id });
+			const links = response?.links || [];
+			const section = document.getElementById('found-links-section');
+			const list = document.getElementById('found-links-list');
+			const addAllBtn = document.getElementById('add-all-btn');
+
+			if (links.length > 0) {
+				section.style.display = 'block';
+				links.forEach((link, i) => {
+					const row = document.createElement('div');
+					row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px; margin-bottom:6px; background:white; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1);';
+
+					const label = document.createElement('span');
+					label.style.cssText = 'font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px;';
+					const displayName = link.type === 'magnet'
+						? (link.url.match(/dn=([^&]*)/)?.[1]?.replace(/\+/g, ' ')?.substring(0, 40) || link.url.substring(0, 50))
+						: (link.url.split('/').pop()?.substring(0, 40) || link.url.substring(0, 50));
+					label.textContent = (link.type === 'magnet' ? '\u{1F9F2} ' : '\u{1F4E6} ') + displayName;
+					label.title = link.url;
+
+					const btn = document.createElement('button');
+					btn.textContent = 'Add';
+					btn.style.cssText = 'background:#4a90e2; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; flex-shrink:0; margin-left:8px;';
+					btn.addEventListener('click', () => {
+						const isMagnet = link.type === 'magnet';
+						chrome.runtime.sendMessage({ type: 'add_torrent', url: link.url, is_magnet: isMagnet });
+						btn.textContent = '\u2713';
+						btn.style.backgroundColor = '#27ae60';
+						btn.disabled = true;
+					});
+
+					row.appendChild(label);
+					row.appendChild(btn);
+					list.appendChild(row);
+				});
+
+				addAllBtn.addEventListener('click', () => {
+					links.forEach(link => {
+						chrome.runtime.sendMessage({ type: 'add_torrent', url: link.url, is_magnet: link.type === 'magnet' });
+					});
+					addAllBtn.textContent = 'Added!';
+					addAllBtn.style.backgroundColor = '#27ae60';
+					addAllBtn.disabled = true;
+				});
+			}
+		}
+	} catch (error) {
+		console.error('Error loading found links:', error);
+	}
 });
