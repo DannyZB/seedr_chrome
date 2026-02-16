@@ -2,6 +2,7 @@
 let seedr_chrome_add_after_login = '';
 let seedr_chrome_add_after_login_magnet = false;
 let seedr_chrome_add_after_login_force = false;
+
 function showLoading() {
 	if (window.self !== window.top) return; // We're not in the outermost window
 
@@ -39,7 +40,7 @@ function hideLoading() {
 
 	// Reset progress bar
 	const progressBar = document.querySelector('.seedr-progress-bar-fill');
-	progressBar.style.width = '0';
+	if (progressBar) progressBar.style.width = '0';
 }
 
 function simulateProgress() {
@@ -60,6 +61,147 @@ function showLogin() {
 		type: 'open_window',
 		url: 'https://www.seedr.cc/auth/pages/login?extension=1'
 	});
+}
+
+// Batch Panel Overlay
+function showBatchPanel() {
+	if (window.self !== window.top) return;
+
+	// Remove existing panel if any
+	const existing = document.getElementById('seedr-batch-panel');
+	if (existing) existing.remove();
+
+	const panel = document.createElement('div');
+	panel.id = 'seedr-batch-panel';
+	panel.innerHTML = `
+		<div class="seedr-batch-overlay"></div>
+		<div class="seedr-batch-modal">
+			<div class="seedr-batch-header">
+				<img src="${chrome.runtime.getURL("images/logo-icon.png")}" alt="Seedr" class="seedr-batch-logo">
+				<h3>Batch Add to Seedr</h3>
+				<button class="seedr-batch-close">&times;</button>
+			</div>
+			<div class="seedr-batch-body">
+				<p>Paste magnet links or torrent URLs, one per line:</p>
+				<textarea class="seedr-batch-textarea" placeholder="magnet:?xt=urn:btih:...&#10;https://example.com/file.torrent&#10;..."></textarea>
+				<div class="seedr-batch-status"></div>
+			</div>
+			<div class="seedr-batch-footer">
+				<span class="seedr-batch-count">0 links</span>
+				<button class="seedr-batch-cancel">Cancel</button>
+				<button class="seedr-batch-submit" disabled>Add to Seedr</button>
+			</div>
+		</div>
+	`;
+
+	document.body.appendChild(panel);
+
+	const textarea = panel.querySelector('.seedr-batch-textarea');
+	const countSpan = panel.querySelector('.seedr-batch-count');
+	const submitBtn = panel.querySelector('.seedr-batch-submit');
+	const statusDiv = panel.querySelector('.seedr-batch-status');
+
+	// Update link count on input
+	textarea.addEventListener('input', () => {
+		const links = parseLinks(textarea.value);
+		const count = links.length;
+		countSpan.textContent = `${count} link${count !== 1 ? 's' : ''}`;
+		submitBtn.disabled = count === 0;
+	});
+
+	// Close handlers
+	panel.querySelector('.seedr-batch-close').addEventListener('click', closeBatchPanel);
+	panel.querySelector('.seedr-batch-cancel').addEventListener('click', closeBatchPanel);
+	panel.querySelector('.seedr-batch-overlay').addEventListener('click', closeBatchPanel);
+
+	// Submit handler
+	submitBtn.addEventListener('click', () => {
+		const links = parseLinks(textarea.value);
+		if (links.length === 0) return;
+
+		textarea.disabled = true;
+		submitBtn.disabled = true;
+		statusDiv.textContent = 'Starting...';
+		statusDiv.className = 'seedr-batch-status';
+
+		chrome.runtime.sendMessage({
+			type: 'add_torrents_batch',
+			links: links,
+			force: true
+		}, (response) => {
+			if (!response) {
+				statusDiv.textContent = 'Error: Extension disconnected';
+				statusDiv.className = 'seedr-batch-status';
+			} else if (response.result === 'login_required') {
+				statusDiv.textContent = 'Please log in to Seedr first';
+				statusDiv.className = 'seedr-batch-status';
+				showLogin();
+			} else if (response.success !== undefined) {
+				const { success, failed, wishlist } = response;
+				let msg = '';
+				if (success > 0) msg += `${success} added`;
+				if (wishlist > 0) msg += `${msg ? ', ' : ''}${wishlist} to wishlist`;
+				if (failed > 0) msg += `${msg ? ', ' : ''}${failed} failed`;
+				statusDiv.textContent = msg || 'Done';
+				statusDiv.className = 'seedr-batch-status seedr-batch-status-done';
+
+				// Close after delay if all succeeded
+				if (failed === 0) {
+					setTimeout(closeBatchPanel, 2000);
+				}
+			} else {
+				statusDiv.textContent = 'Unknown error';
+				statusDiv.className = 'seedr-batch-status';
+			}
+			textarea.disabled = false;
+			submitBtn.disabled = false;
+		});
+	});
+
+	// Focus textarea
+	textarea.focus();
+
+	// ESC to close
+	panel.escHandler = (e) => {
+		if (e.key === 'Escape') {
+			closeBatchPanel();
+		}
+	};
+	document.addEventListener('keydown', panel.escHandler);
+}
+
+function closeBatchPanel() {
+	const panel = document.getElementById('seedr-batch-panel');
+	if (panel) {
+		if (panel.escHandler) {
+			document.removeEventListener('keydown', panel.escHandler);
+		}
+		panel.remove();
+	}
+}
+
+function parseLinks(text) {
+	const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+	const links = [];
+	const magnetStart = 'magnet:?xt=urn:btih:';
+
+	for (const line of lines) {
+		if (line.startsWith(magnetStart)) {
+			links.push({ url: line, isMagnet: true });
+		} else if (line.startsWith('http://') || line.startsWith('https://')) {
+			// Accept any HTTP URL - backend will validate
+			links.push({ url: line, isMagnet: false });
+		}
+	}
+
+	return links;
+}
+
+function updateBatchProgress(current, total, status) {
+	const statusDiv = document.querySelector('.seedr-batch-status');
+	if (statusDiv) {
+		statusDiv.textContent = `${status} (${current}/${total})`;
+	}
 }
 
 function addTorrent(url, is_magnet, force = false) {
@@ -106,13 +248,14 @@ function processLink(link) {
 
 	if (link.href.startsWith(magnet_start)) {
 		link.dataset.seedrProcessed = 'true';
+		const href = link.href; // Capture href before cloning
 		// Remove all other event listeners
 		const newLink = link.cloneNode(true);
 		newLink.dataset.seedrProcessed = 'true';
 		newLink.addEventListener('click', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			addTorrent(link.href, true);
+			addTorrent(href, true);
 		});
 		link.parentNode.replaceChild(newLink, link);
 	} else {
@@ -120,6 +263,7 @@ function processLink(link) {
 		const matches = base_link.match(torrent_regex);
 		if (matches && matches[1] === "torrent") {
 			link.dataset.seedrProcessed = 'true';
+			const href = link.href; // Capture href before cloning
 			link.removeAttribute('target');
 			// Remove all other event listeners
 			const newLink = link.cloneNode(true);
@@ -127,11 +271,85 @@ function processLink(link) {
 			newLink.addEventListener('click', (e) => {
 				e.preventDefault();
 				e.stopPropagation();
-				addTorrent(link.href, false);
+				addTorrent(href, false);
 			});
 			link.parentNode.replaceChild(newLink, link);
 		}
 	}
+}
+
+// Deep page scanner — finds magnet/torrent links beyond <a href>
+function scanPageForLinks() {
+	const found = new Map(); // dedupe by hash or URL
+
+	function addLink(url, type, source) {
+		// Normalize and dedupe by BTIH hash (magnets) or URL (torrents)
+		let key;
+		if (type === 'magnet') {
+			const hashMatch = url.match(/urn:btih:([a-zA-Z0-9]{32,40})/i);
+			key = hashMatch ? hashMatch[1].toLowerCase() : url;
+		} else {
+			key = url.split('?')[0].toLowerCase();
+		}
+		if (!found.has(key)) {
+			found.set(key, { url, type, source });
+		}
+	}
+
+	// 1. Existing <a href> magnets and torrents (already intercepted, but count them)
+	document.querySelectorAll('a[href]').forEach(a => {
+		const href = a.href;
+		if (href.startsWith('magnet:?xt=urn:btih:')) {
+			addLink(href, 'magnet', 'a-href');
+		} else if (/\.torrent(\?|$)/i.test(href.split('?')[0])) {
+			addLink(href, 'torrent', 'a-href');
+		}
+	});
+
+	// 2. data-* attributes on any element
+	const dataAttrs = ['data-magnet', 'data-torrent', 'data-href', 'data-url', 'data-download'];
+	dataAttrs.forEach(attr => {
+		document.querySelectorAll(`[${attr}]`).forEach(el => {
+			const val = el.getAttribute(attr);
+			if (!val) return;
+			if (/^magnet:\?xt=urn:btih:/i.test(val)) {
+				addLink(val, 'magnet', attr);
+			} else if (/\.torrent(\?|$)/i.test(val)) {
+				addLink(val, 'torrent', attr);
+			}
+		});
+	});
+
+	// 3. onclick/onmousedown attribute values
+	document.querySelectorAll('[onclick],[onmousedown]').forEach(el => {
+		const handler = el.getAttribute('onclick') || el.getAttribute('onmousedown') || '';
+		// Extract magnet URIs from JS string literals
+		const magnetMatches = handler.match(/magnet:\?xt=urn:btih:[a-zA-Z0-9][^'"\s)}\]>]*/gi);
+		if (magnetMatches) {
+			magnetMatches.forEach(m => addLink(m, 'magnet', 'onclick'));
+		}
+		// Extract .torrent URLs
+		const torrentMatches = handler.match(/https?:\/\/[^'"\s)}\]>]*\.torrent[^'"\s)}\]>]*/gi);
+		if (torrentMatches) {
+			torrentMatches.forEach(t => addLink(t, 'torrent', 'onclick'));
+		}
+	});
+
+	// 4. Inline <script> content
+	document.querySelectorAll('script:not([src])').forEach(script => {
+		const text = script.textContent;
+		if (!text) return;
+		const magnetMatches = text.match(/magnet:\?xt=urn:btih:[a-zA-Z0-9][^'"\s)}\]>]*/gi);
+		if (magnetMatches) {
+			magnetMatches.forEach(m => addLink(m, 'magnet', 'script'));
+		}
+		const torrentMatches = text.match(/https?:\/\/[^'"\s)}\]>]*\.torrent[^'"\s)}\]>]*/gi);
+		if (torrentMatches) {
+			torrentMatches.forEach(t => addLink(t, 'torrent', 'script'));
+		}
+	});
+
+	return Array.from(found.values());
 }
 
 // Process new links
@@ -253,6 +471,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			break;
 		case 'notify':
 			notify(message);
+			break;
+		case 'batch_progress':
+			updateBatchProgress(message.current, message.total, message.status);
+			break;
+		case 'show_batch_panel':
+			showBatchPanel();
 			break;
 		case 'login_successful':
 			addTorrent(seedr_chrome_add_after_login, seedr_chrome_add_after_login_magnet, seedr_chrome_add_after_login_force);
