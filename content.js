@@ -498,6 +498,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	return true;
 });
 
+// Badge update — tell background worker how many links found on this page
+function updateBadge() {
+	const links = scanPageForLinks();
+	chrome.runtime.sendMessage({
+		type: 'update_badge',
+		count: links.length,
+		links: links
+	});
+}
+const debouncedUpdateBadge = debounce(updateBadge, 500);
+
 const observer = new MutationObserver((mutations) => {
 	const addedNodes = [];
 	let attributeChanged = false;
@@ -520,7 +531,8 @@ const observer = new MutationObserver((mutations) => {
 		debouncedProcessNewLinks(addedNodes);
 	}
 	if (attributeChanged) {
-		// Re-scan for non-<a> links too (badge update added in Task 1.3)
+		// Re-scan for non-<a> links too
+		debouncedUpdateBadge();
 	}
 });
 
@@ -538,6 +550,9 @@ chrome.runtime.sendMessage({ type: 'getStorage', key: 'control_torrents' }, (res
 		attributes: true,
 		attributeFilter: ['href', 'data-magnet', 'data-torrent', 'data-href', 'data-url']
 	});
+
+	// Initial scan + badge update after processing <a> links
+	setTimeout(updateBadge, 1000);
 });
 
 const extensionElement = document.getElementById('seedr-extension-element');
