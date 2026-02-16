@@ -500,11 +500,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 const observer = new MutationObserver((mutations) => {
 	const addedNodes = [];
+	let attributeChanged = false;
+
 	mutations.forEach((mutation) => {
-		addedNodes.push(...mutation.addedNodes);
+		if (mutation.type === 'childList') {
+			addedNodes.push(...mutation.addedNodes);
+		} else if (mutation.type === 'attributes') {
+			// Re-process element when relevant attributes change
+			const el = mutation.target;
+			if (el.tagName === 'A') {
+				el.dataset.seedrProcessed = ''; // Clear processed flag
+				processLink(el);
+			}
+			attributeChanged = true;
+		}
 	});
+
 	if (addedNodes.length > 0) {
 		debouncedProcessNewLinks(addedNodes);
+	}
+	if (attributeChanged) {
+		// Re-scan for non-<a> links too (badge update added in Task 1.3)
 	}
 });
 
@@ -516,7 +532,12 @@ chrome.runtime.sendMessage({ type: 'getStorage', key: 'control_torrents' }, (res
 	document.querySelectorAll('a').forEach(processLink);
 
 	// Start observing
-	observer.observe(document.body, { childList: true, subtree: true });
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: ['href', 'data-magnet', 'data-torrent', 'data-href', 'data-url']
+	});
 });
 
 const extensionElement = document.getElementById('seedr-extension-element');
