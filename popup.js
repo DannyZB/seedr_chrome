@@ -150,4 +150,74 @@ document.addEventListener('DOMContentLoaded', async () => {
 	} catch (error) {
 		console.error('Error loading found links:', error);
 	}
+
+	// Relay scan button
+	const relayScanBtn = document.getElementById('relay-scan-btn');
+	const relayResults = document.getElementById('relay-results');
+	const relayLoading = document.getElementById('relay-loading');
+
+	// Show relay button (always available — server enriches with metadata)
+	relayScanBtn.style.display = 'block';
+
+	relayScanBtn.addEventListener('click', async () => {
+		relayScanBtn.style.display = 'none';
+		relayLoading.style.display = 'block';
+
+		try {
+			// Get filtered HTML from content script
+			const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+			const pageData = await chrome.tabs.sendMessage(activeTab.id, { type: 'get_filtered_html' });
+
+			// Get access token from background
+			const token = await chrome.runtime.sendMessage({ type: 'getStorage', key: 'access_token' });
+
+			const resp = await fetch('https://www.seedr.cc/api/scrape/html/torrents', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					url: pageData.url,
+					html: pageData.html,
+					access_token: token.value
+				})
+			});
+
+			const data = await resp.json();
+			relayLoading.style.display = 'none';
+
+			if (data.torrents && data.torrents.length > 0) {
+				relayResults.style.display = 'block';
+				relayResults.innerHTML = '<strong style="display:block;margin-bottom:8px;">Server found:</strong>';
+				data.torrents.forEach(t => {
+					const row = document.createElement('div');
+					row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px; margin-bottom:6px; background:white; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1);';
+
+					const label = document.createElement('span');
+					label.style.cssText = 'font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px;';
+					label.textContent = t.title || t.hash?.substring(0, 16) || 'Unknown';
+					label.title = t.magnet || t.hash;
+
+					const btn = document.createElement('button');
+					btn.textContent = 'Add';
+					btn.style.cssText = 'background:#4a90e2; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; flex-shrink:0; margin-left:8px;';
+					btn.addEventListener('click', () => {
+						chrome.runtime.sendMessage({ type: 'add_torrent', url: t.magnet, is_magnet: true });
+						btn.textContent = '\u2713';
+						btn.style.backgroundColor = '#27ae60';
+						btn.disabled = true;
+					});
+
+					row.appendChild(label);
+					row.appendChild(btn);
+					relayResults.appendChild(row);
+				});
+			} else {
+				relayResults.style.display = 'block';
+				relayResults.textContent = 'No torrents found on this page.';
+			}
+		} catch (error) {
+			relayLoading.style.display = 'none';
+			relayResults.style.display = 'block';
+			relayResults.textContent = 'Scan failed: ' + error.message;
+		}
+	});
 });
